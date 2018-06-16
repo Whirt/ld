@@ -5,11 +5,16 @@
 {% block style %}
     #left_bar {
         padding: 3%;
-        margin: 2%;
-        min-width: 13%;
+        margin: 2% 2% 2% 5%;
+        min-width: 18%;
         min-height: 64%;
-        background: #5470a1;
         float: left;
+
+        background: transparent url('../../../media/static_images/mobile_blue.png');
+        background-size: 100% 100%;
+    }
+    #left_bar div {
+        margin-top: 12%;
     }
     #right_bar {
         padding: 3%;
@@ -18,26 +23,47 @@
         min-height: 64%;
         background: #54e5a1;
         float:left;
-        
+
         <!-- DA IMPLEMENTARE IN JAVASCRIPT LA FUNZIONE DI SCROLLING
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         -->
     }
+    #messages {
+        height:400px;
+        background-color: #a1cbf3;
+        overflow-y: auto;
+        background-color: black;
+    }
+    .sent_message {
+        margin: 1% 0%;
+        height: 20px;
+        background-color: white;
+    }
+    .received_message {
+        margin: 1% 0%;
+        height: 20px;
+        background-color: green;
+    }
+{% endblock %}
+{% block background %}
+    background: url('../../../media/static_images/messenger_background.jpg');
+    background-size: 100% 100%;
 {% endblock %}
 {% block body %}
     <div id=left_bar>
+        <div>
         <p style='background-color:green'>
             {% if left_notification %}
                 {{ left_notification }}
             {% endif %}
         </p>
         <form action="{% url 'messenger:search_user' %}" method='GET'>
-            <input type='text' name='keywords'/>
+            <input type='text' name='keywords' size=10/>
             <input type='submit' value='search user'/>
         </form>
-
+        <br>
         Pending requests <br>
         {% for request in friendRequests %}
             <li>
@@ -64,28 +90,30 @@
         {% endfor %}
     <br>Num friends: {{ numFriends }}
     </div>
+    </div>
     <div id='right_bar'>
         Messaging with {{ user_chat_with.username }} <br>
         {% if chat_selected %}
-            Messaggggggggi: <br>
+        <div id='messages'>
             {% for mess in messages %}
                 {% if mess.sender == user_chat_with %}
-                <li style='background-color:blue' >
-                    {{ mess.sender }}:{{ mess.message }} - {{ mess.datetime}}
-                </li>
+                <div class=sent_message>
+                    {{ mess.message }}  - {{ mess.datetime}}
+                </div><br>
                 {% else %}
-                <li style='background-color:green' >
-                    {{ mess.sender }}:{{ mess.message }} - {{ mess.datetime}}
-                </li>
+                <div class=received_message>
+                    {{ mess.message }}  - {{ mess.datetime}}
+                </div>
                 {% endif %}
             {% endfor %}
-            <textarea style='resize:none' rows=10 cols=80 name='messageToBeSent' form='mess_form'>
-            </textarea>
-            <form id='mess_form' method='POST'>
-                {% csrf_token %}
-                <input type='hidden' name='username_chat_with' value={{ user_chat_with.username }}>
-                <input type='submit' name='new_message' value='Send message'>
-            </form>
+        </div>
+        <textarea style='resize:none' rows=10 cols=80 name='messageToBeSent' form='mess_form'>
+        </textarea>
+        <form id='mess_form' method='POST'>
+            {% csrf_token %}
+            <input type='hidden' name='username_chat_with' value={{ user_chat_with.username }}>
+            <input type='submit' name='new_message' value='Send message'>
+        </form>
         {% endif %}
     </div>
 {% endblock %}

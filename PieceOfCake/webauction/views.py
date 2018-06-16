@@ -26,8 +26,8 @@ class SearchView(generic.ListView):
         category = self.request.GET.get('category_choice')
         if category != None:
             print('category:' + str(category))
-        print('keyword da provare: ' + keywords)
-        keywords = keywords.split()
+        print('keywords da provare: ' + keywords)
+
         """
         Questo e' il caso in cui di default la ricerca sia in OR
         # L'ordinamento consiste in due dictionary
@@ -53,13 +53,13 @@ class SearchView(generic.ListView):
 
         # Caso in cui la ricerca sia di default in AND
         if category != None and category != 'ALL':
-            selected_auctions = Auction.objects.filter(title__icontains=keywords[0], \
-                                    active__exact=True, category=category)
+            selected_auctions = Auction.objects.filter(active__exact=True, category__exact=category)
         else:
-            selected_auctions = Auction.objects.filter(title__icontains=keywords[0], \
-                                                active__exact=True)
+            selected_auctions = Auction.objects.filter(active__exact=True)
 
-        keywords.pop(0)
+        print(len(selected_auctions))
+
+        keywords = keywords.split()
         for keyword in keywords:
             selected_auctions = [ auction for auction in selected_auctions
                                 if keyword in auction.title ]
@@ -68,8 +68,8 @@ class SearchView(generic.ListView):
         # !!!!!!!!!!!!!! DA IMPLEMENTARE
 
         # Ordino in maniera visualizzabile su template li raggruppo
-        VISUAL_GROUP = 4
-        num_group = int(math.ceil(len(selected_auctions)/VISUAL_GROUP))
+        VISUAL_GROUP = 2
+        num_group = int(math.ceil(len(selected_auctions)/float(VISUAL_GROUP)))
         grouped_selected_auctions = []
         for i in range(0, num_group):
             grouped_selected_auctions.append(

@@ -4,40 +4,36 @@
 {% endblock %}
 {% block style %}
         #auction_data {
-            margin: 5% 5% 5% 8% ;
-            padding: 1%;
-            width: 82%;
-            height: 75%;
-            <!-- Nowrap nel parent e displa inline nelle celle
-            fa sì che gli elementi float non si sovrappongano -->
-            whitespace: nowrap;
-
-            background-color: #54e5a1;
+            margin: 0% 36% 0% 32% ;
+            padding: 3%;
+            width: 35%;
+            height: 85%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: white;
         }
         #auction_header {
-            background-color: blue;
-            text-align: left;
             height: 10%;
+            text-align: center;
+            background-color: #fffac7;
         }
-        #auction_left_data {
+        #auction_top_data {
             padding: 1%;
-            width: 40%;
-            height: 100%;
-            float: left;
-            display: inline-block;
+            margin: 0% 15%;
+            width:75%;
 
-            text-align: right;
-            background-color: grey;
+            text-align: left;
 
         }
-        #auction_right_data {
+        #auction_bottom_data {
             padding: 1%;
-            width: 55%;
-            height: 100%;
-            display: inline-block;
-
-            background-color: yellow;
+            width: 95%;
+            text-align: center;
         }
+{% endblock %}
+{% block background %}
+    background: url('../../../media/static_images/auction_background.jpeg');
+    background-size: 100% 100%;
 {% endblock %}
 {% block body %}
 <div id='auction_data'>
@@ -50,11 +46,11 @@
         </p>
     {% endif %}
     </div>
-
+    <br><br>
     <form enctype="multipart/form-data" method='POST'>
-    <div id=auction_left_data>
+    <div id=auction_top_data>
             {% csrf_token %}
-            Title: {{ form.title }} <br>
+            Title: {{ form.title }} <br><br>
             Duration DD/HH/MM :
             <input type='numeric' name='days'
                 min=0 max=10 step=1 size=1 value=1 required>
@@ -62,13 +58,15 @@
                 min=0 max=23 step=1 size=1 value=0 required>
             <input type='numeric' name='minutes'
                 min=0 max=59 step=1 size=1 value=0 required>
-            <br>
-            Minimum price: {{ form.min_price }} <br>
-            Minimum bid:{{ form.min_bid }} <br>
-            Image: {{ form.image }} <br>
+            <br><br>
+            Minimum price: {{ form.min_price }} <br><br>
+            Minimum bid: {{ form.min_bid }} <br><br>
+            Image: {{ form.image }} <br><br>
             Category: {{ form.category }} <br>
     </div>
-    <div id=auction_right_data>
+    <br>
+    <br>
+    <div id=auction_bottom_data>
             Description: <br> {{ form.description }} <br>
             <input type='submit' value='Insert'/>
     </div>

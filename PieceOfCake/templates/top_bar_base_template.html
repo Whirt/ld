@@ -25,7 +25,9 @@
         background-color:#54e5a1;
         padding-top: 5px;
         height:8%; /* height of header */
-        text-align:right;
+        text-align:center;
+        background: url('../../../media/static_images/header.png');
+        background-size: 100% 100%;
     }
     #header a {
         margin:7px;
@@ -35,6 +37,9 @@
         height:89%; /* height of body */
         padding-top:0px;
         padding-bottom:0px;
+
+        {% block background %}
+        {% endblock %}
 
         overflow-x: auto;
         overflow-y: scroll;

@@ -8,5 +8,5 @@ class MakeAuctionForm(forms.ModelForm):
                     'min_bid', 'category']
         widgets = {
                    'category' : forms.Select(choices=CATEGORY_CHOICES),
-                   'description' : forms.Textarea(attrs={'rows':20, 'cols':80}),
+                   'description' : forms.Textarea(attrs={'rows':20, 'cols':58}),
                   }
