@@ -1,0 +1,33 @@
+<div id=login_top_bar>
+    {% if user.is_authenticated %}
+        <a href={% url 'logout_view' %}>
+            <img src="/media/static_images/logout_door.png"
+            width=40px height=40px >
+        </a>
+        <a href=/webauction/accounts/profile/{{ user.username }}>
+            <img src="/media/static_images/person_profile.png"
+            width=30px height=40px>
+        </a>
+        <a href={% url 'messenger:messenger' %}>
+            <img src="/media/static_images/mail_pic.png"
+            width=45px height=40px >
+        </a>
+        <a href={% url 'webauction:make_auction' %}>
+            <img src="/media/static_images/make_auction.png"
+            width=45px height=40px >
+        </a>
+    {% else %}
+        <a href={% url 'sign_up' %}>
+            <img src="/media/static_images/sign_up_button.png"
+            width=70px height=40px >
+        </a>
+        <a href={% url 'login' %}>
+            <img src="/media/static_images/login_button.png"
+            width=70px 0px height=40px >
+        </a>
+    {% endif %}
+    <a href="{% url 'webauction:index' %}" text-align=left>
+        <img src="/media/static_images/home_button.png"
+        width=50px height=40px >
+    </a>
+</div>

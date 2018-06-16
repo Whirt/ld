@@ -1,0 +1,77 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Make new auction
+{% endblock %}
+{% block style %}
+        #auction_data {
+            margin: 5% 5% 5% 8% ;
+            padding: 1%;
+            width: 82%;
+            height: 75%;
+            <!-- Nowrap nel parent e displa inline nelle celle
+            fa sì che gli elementi float non si sovrappongano -->
+            whitespace: nowrap;
+
+            background-color: #54e5a1;
+        }
+        #auction_header {
+            background-color: blue;
+            text-align: left;
+            height: 10%;
+        }
+        #auction_left_data {
+            padding: 1%;
+            width: 40%;
+            height: 100%;
+            float: left;
+            display: inline-block;
+
+            text-align: right;
+            background-color: grey;
+
+        }
+        #auction_right_data {
+            padding: 1%;
+            width: 55%;
+            height: 100%;
+            display: inline-block;
+
+            background-color: yellow;
+        }
+{% endblock %}
+{% block body %}
+<div id='auction_data'>
+    <div id=auction_header>
+    WARNING: Once is published it cannot be modified.
+    But can be canceled<br>
+    {% if error_message %}
+        <p style='background-color:red'>
+            Something gone wrong {{error_message}}
+        </p>
+    {% endif %}
+    </div>
+
+    <form enctype="multipart/form-data" method='POST'>
+    <div id=auction_left_data>
+            {% csrf_token %}
+            Title: {{ form.title }} <br>
+            Duration DD/HH/MM :
+            <input type='numeric' name='days'
+                min=0 max=10 step=1 size=1 value=1 required>
+            <input type='numeric' name='hours'
+                min=0 max=23 step=1 size=1 value=0 required>
+            <input type='numeric' name='minutes'
+                min=0 max=59 step=1 size=1 value=0 required>
+            <br>
+            Minimum price: {{ form.min_price }} <br>
+            Minimum bid:{{ form.min_bid }} <br>
+            Image: {{ form.image }} <br>
+            Category: {{ form.category }} <br>
+    </div>
+    <div id=auction_right_data>
+            Description: <br> {{ form.description }} <br>
+            <input type='submit' value='Insert'/>
+    </div>
+    </form>
+</div>
+{% endblock %}

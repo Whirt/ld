@@ -1,0 +1,47 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Risultati della ricerca
+{% endblock %}
+{% block style %}
+    #search_bar {
+        position: fixed;
+        padding: 10px 10px 0px 10px;
+        width: 100%;
+        height: 45px;
+
+        background-color: #c3ffcd;
+        color: black;
+        z-index: 2;
+    }
+    #result {
+        margin-top: 65px;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background-color: white;
+    }
+{% endblock %}
+{% block body %}
+<div id=search_bar>
+    <form method='GET'>
+        <input type='text' name='keywords' required/>
+        <input type='submit' value='search'/>
+    </form>
+</div>
+<div id=result>
+    {% for userProfile in matching_user_list %}
+    <tr>
+        <td>
+            <a href='{% url 'webauction:profile' searched_username=userProfile.user.username %}'>
+                <img src={{ userProfile.profile_pic.url}} height=200 width=200>
+            </a>
+        </td>
+        <td>
+            Username : {{ userProfile.user.username }}
+            Description: {{ userProfile.description }} <br>
+        </td>
+    </tr>
+    {% endfor %}
+</div>
+{% endblock %}

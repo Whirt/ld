@@ -1,0 +1,91 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Messenger
+{% endblock %}
+{% block style %}
+    #left_bar {
+        padding: 3%;
+        margin: 2%;
+        min-width: 13%;
+        min-height: 64%;
+        background: #5470a1;
+        float: left;
+    }
+    #right_bar {
+        padding: 3%;
+        margin: 2%;
+        min-width: 50%;
+        min-height: 64%;
+        background: #54e5a1;
+        float:left;
+        
+        <!-- DA IMPLEMENTARE IN JAVASCRIPT LA FUNZIONE DI SCROLLING
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        -->
+    }
+{% endblock %}
+{% block body %}
+    <div id=left_bar>
+        <p style='background-color:green'>
+            {% if left_notification %}
+                {{ left_notification }}
+            {% endif %}
+        </p>
+        <form action="{% url 'messenger:search_user' %}" method='GET'>
+            <input type='text' name='keywords'/>
+            <input type='submit' value='search user'/>
+        </form>
+
+        Pending requests <br>
+        {% for request in friendRequests %}
+            <li>
+                <form method='POST'>
+                    {% csrf_token %}
+                    {{ request.friend_of.username }}
+                    <input type='hidden' name='accept_user'
+                        value={{ request.friend_of.username }}>
+                    <input type='submit' name='accept' value='Add me'>
+                </form>
+            </li>
+        {% endfor %}
+        <br> Friends: <br>
+        {% for tuple in friends_plus_profile %}
+            <li>
+                <img src={{ tuple.1.profile_pic.url }} height=35 width=35>
+                <form method='POST'>
+                    {% csrf_token %}
+                    <input type='hidden' name='user_chat'
+                        value={{ tuple.0.username }}>
+                    <input type='submit' name='chat' value={{ tuple.0.username }}>
+                </form>
+            </li>
+        {% endfor %}
+    <br>Num friends: {{ numFriends }}
+    </div>
+    <div id='right_bar'>
+        Messaging with {{ user_chat_with.username }} <br>
+        {% if chat_selected %}
+            Messaggggggggi: <br>
+            {% for mess in messages %}
+                {% if mess.sender == user_chat_with %}
+                <li style='background-color:blue' >
+                    {{ mess.sender }}:{{ mess.message }} - {{ mess.datetime}}
+                </li>
+                {% else %}
+                <li style='background-color:green' >
+                    {{ mess.sender }}:{{ mess.message }} - {{ mess.datetime}}
+                </li>
+                {% endif %}
+            {% endfor %}
+            <textarea style='resize:none' rows=10 cols=80 name='messageToBeSent' form='mess_form'>
+            </textarea>
+            <form id='mess_form' method='POST'>
+                {% csrf_token %}
+                <input type='hidden' name='username_chat_with' value={{ user_chat_with.username }}>
+                <input type='submit' name='new_message' value='Send message'>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

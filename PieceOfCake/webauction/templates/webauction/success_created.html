@@ -1,0 +1,10 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Make new auction
+{% endblock %}
+{% block body %}
+    <p style='background-color:rgb(160, 204, 255)'>
+        Auction created successfully you can visit
+        <a href='{% url 'webauction:detail' auction_pk %}'>auction page</a>
+    </p>
+{% endblock %}

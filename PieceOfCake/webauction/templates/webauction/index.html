@@ -1,0 +1,43 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    PieceOfCake
+{% endblock %}
+{% block style %}
+    #search_div {
+        margin: 0 20% 0 30%;
+    }
+    #logo {
+        margin: 5% 30% 2% 35%;
+    }
+    #advanced {
+        margin-top: 1%;
+        margin-left: 38%;
+        display: inline-block;
+        float: left;
+    }
+    #make_auction {
+        margin-top: 1%;
+        display: inline-block;
+        float: left;
+    }
+{% endblock %}
+{% block body %}
+    <img id='logo' src='/media/static_images/logo_pic.png' height=300 width=400>
+    <div id='search_div'>
+        <form action="{% url 'webauction:search' %}" method='GET'>
+            <input type='text' name='keywords' maxlength=55 size=55 required>
+            <input type='submit' value='search product'>
+        </form>
+    </div>
+    <div id='advanced'>
+        <form action="{% url 'webauction:search' %}" method='GET'>
+            <input type='hidden' name='keywords' value=advanced_search>
+            <input type='submit' value='Advanced Search'>
+        </form>
+    </div>
+    <div id='make_auction'>
+        <form action="{% url 'webauction:make_auction' %}" method='GET'>
+            <input type='submit' value='New Auction'>
+        </form>
+    </div>
+{% endblock %}

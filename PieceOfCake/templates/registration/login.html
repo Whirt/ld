@@ -1,0 +1,41 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Login
+{% endblock %}
+{% block style %}
+    #outer {
+
+    }
+    #inner {
+        position:absolute;
+        fixed-width: 30%;
+        padding: 2% 4%;
+        margin: 10% 15% 10% 30%;
+        background: #54e5a1;
+        text-align: center;
+        color: white;
+    }
+{% endblock %}
+{% block body %}
+    <div id=outer>
+        <div id=inner>
+            {% if just_signed_up %}
+            <p style='background-color:white'>
+                Signed up successfully, now you can log in
+            </p>
+            {% endif %}
+            {% if form.errors %}
+            <p> Username/password didn't match </p>
+            {% endif %}
+            <div>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.username.label_tag }} {{ form.username }} <br><br>
+                {{ form.password.label_tag }} {{ form.password }} <br><br>
+                <input type="submit" value="login" />
+                <input type="hidden" name="next" value="{{next}}" />
+            </form><br>
+            </div>
+        </div>
+    </div>
+{% endblock %}

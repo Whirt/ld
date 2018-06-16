@@ -1,0 +1,88 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Risultati della ricerca
+{% endblock %}
+{% block style %}
+    #auction_detail {
+        height:100%;
+        position:relative;
+        background-color: pink;
+    }
+    #left_panel {
+        padding: 3%;
+        margin: 2% 0% 2% 2%;
+        float: left;
+        height: 70%;
+        width: 30%;
+        background-color: orange;
+    }
+    #right_panel {
+        padding: 3%;
+        margin: 2% 2% 2% 0%;
+        float: left;
+        height: 70%;
+        width: 50%;
+        background-color: green;
+    }
+    #description {
+        height:70%;
+        margin:1%;
+        background-color: white;
+        overflow-y: scroll;
+    }
+    #error_message {
+        color: white;
+        background-color: red;
+    }
+    #success_message {
+        background-color: green;
+    }
+{% endblock %}
+{% block body %}
+<div id='auction_detail'>
+    <div id='left_panel'>
+        <img src={{ auction.image.url }} height=350px length=350px> <br>
+        Bids: {{ auction.bid_count }} <br>
+        Last_bid_user:
+        {% if auction.last_bid_user != None %}
+        <a href='{% url 'webauction:profile' searched_username=auction.last_bid_user.username %}'>
+            {{ auction.last_bid_user }} </a> <br>
+        {% else %}
+            None <br>
+        {% endif %}
+        Seller:
+        <a href='{% url 'webauction:profile' searched_username=auction.seller.username %}'>
+            {{ auction.seller.username }} </a> <br>
+        Reliability: {{ sellerProfile.feedback }} % <br>
+        Seller sold number: {{ sellerProfile.sold_auction }} <br>
+    </div>
+    <div id='right_panel'>
+        {% if error_message %}1
+            <div id=error_message> {{ error_message}} </div>
+        {% endif %}
+        {% if success_message %}
+        <div id=success_message> {{ success_message }} </div>
+        {% endif %}
+        Product: {{ auction.title }} <br>
+        <!-- POSSIBILE TIMER TRAMITE JAVASCRIPT !!!!!!!!!
+             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  -->
+        Expiring date: {{ auction.expire_date }} <br>
+        Current price: {{ auction.current_price }} <br>
+        Minimum bid: {{ auction.min_bid }} <br>
+        <form method=POST>
+            {% csrf_token %}
+            <input type="number" name="bid_value" step={{ auction.min_bid }}
+
+            value={{ auction.current_price }}>
+            <input type="submit" name="make_bid"
+            value="Make a bid">
+        </form>
+
+        <div id='description'>
+        Description: <br>
+        {{ auction.description}} <br>
+        </div>
+    </div>
+</div>
+{% endblock %}

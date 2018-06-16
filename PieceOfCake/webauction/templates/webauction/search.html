@@ -1,0 +1,83 @@
+{% extends "top_bar_base_template.html" %}
+{% block title %}
+    Risultati della ricerca
+{% endblock %}
+{% block style %}
+    #search_bar {
+        position: fixed;
+        padding: 10px 10px 0px 10px;
+        width: 100%;
+        height: 45px;
+
+        background-color: #c3ffcd;
+        color: black;
+        z-index: 2;
+    }
+    #result {
+        margin-top: 65px;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background-color: white;
+    }
+{% endblock %}
+{% block body %}
+<div id=search_bar>
+    <form method='GET'>
+        <input type='text' name='keywords' required/>
+        <input type='submit' value='search'/>
+        Category:
+        <select name="category_choice">
+            <option value="ALL">ALL</option>
+            <option value="MS">Music</option>
+            <option value="BK">Book</option>
+            <option value="CL">Clothes</option>
+            <option value="TL">Tools</option>
+            <option value="EL">Electronics</option>
+            <option value="GM">Games</option>
+            <option value="HS">House</option>
+            <option value="OT">Other</option>
+        </select>
+        Order by:
+        <select name="category_choice">
+            <option value="Reliability">Reliability</option>
+            <option value="Price">Price</option>
+            <option value="Data">Data</option>
+        </select>
+        <select name="Order">
+            <option value="HighToLow">Highest to Lowest</option>
+            <option value="LowToHigh">Lowest to Highest</option>
+        </select>
+    </form>
+</div>
+<div id=result>
+    {% if not context.matching_auction_list and context.advanced %}
+        No results.
+    {% endif %}
+    <table>
+        {% for group in context.matching_auction_list %}
+        <tr>
+            {% for auction in group %}
+                <td style='padding-right:15px; text-align:center;'>
+                    <a href='{% url 'webauction:detail' auction.id %}'>{{ auction.title }}</a><br>
+                    by
+                    <a href='{% url 'webauction:profile' searched_username=auction.seller.username %}'>
+                            {{ auction.seller.username }}</a><br>
+                </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for auction in group %}
+                <td style='padding-right:15px;'>
+                <a href='{% url 'webauction:detail' auction.id %}'>
+                    <img style='border-width:5px; border-color:#54e5a1;'
+                    src={{ auction.image.url}} height=300 width=300 border=1px>
+                </a>
+                </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

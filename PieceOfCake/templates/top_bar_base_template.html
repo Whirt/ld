@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<title>
+    {% block title %}{% endblock %}
+</title>
+
+<style>
+    html, body {
+        padding:0;
+        margin:0;
+        height:100%;
+
+        /* stili del carattere */
+        font-family: "Arial Black", Gadget, sans-serif
+        font-size: 10px;
+    }
+    a {
+        text-decoration:none;
+    }
+    #container {
+        min-height:100%;
+        position:relative;
+    }
+    #header {
+        background-color:#54e5a1;
+        padding-top: 5px;
+        height:8%; /* height of header */
+        text-align:right;
+    }
+    #header a {
+        margin:7px;
+    }
+    #body {
+        width:100%;
+        height:89%; /* height of body */
+        padding-top:0px;
+        padding-bottom:0px;
+
+        overflow-x: auto;
+        overflow-y: scroll;
+    }
+    #footer {
+        position:absolute;
+        margin:0;
+        padding:0;
+        bottom:0;
+        width:100%;
+        height:2%; /* height of the footer */
+        background: #c6ffc6;
+        text-align:center;
+        font-size:10px;
+    }
+    {% block style %}
+    {% endblock %}
+</style>
+
+<div id=header>
+    {% include "login_top_bar.html" %}
+</div>
+<div id=body>
+    {% block body %}
+    {% endblock %}
+</div>
+<div id=footer>
+    Progetto d'Esame Linguaggi Dinamici C.d.L Informatica 2018 mat. 103463
+</div>
+</html>

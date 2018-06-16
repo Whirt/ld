@@ -1,0 +1,131 @@
+{% extends 'top_bar_base_template.html' %}
+{% block title %}
+    {{ userProfile.user.username }} profile
+{% endblock %}
+{% block style %}
+    #profile {
+        margin: 2% 2% 0 2%;
+        padding: 1% 1% 1% 1%;
+        float: left;
+        height: 85%;
+        min-width: 40%;
+        border: 5px;
+        background-color: #75e873;
+        color: white;
+    }
+    #upper {
+        padding: 1%;
+        height: 50%;
+        background-color: #75e873;
+    }
+    #profile_picture {
+        margin: 2%;
+        float: left;
+    }
+    #profile_data {
+        margin: 2%;
+    }
+    #lower {
+        padding: 1%;
+        text-align: center;
+        background-color: #75e873;
+    }
+    #auction_data {
+        margin: 2% 2% 0 2%;
+        padding: 1%;
+        min-width: 40%;
+        height: 85%;
+        float: left;
+        background-color: pink;
+    }
+{% endblock %}
+{% block body %}
+<div id=profile>
+    <p style='background-color:#66ff99'>
+        {% if notification %}
+            {{ notification }}
+        {% endif %}
+    </p>
+    <p style='background-color:red'>
+        {% if error_message %}
+            {{ error_message }}
+        {% endif %}
+    </p>
+    <div id=upper>
+    <div id=profile_picture>
+        <img src={{ userProfile.profile_pic.url }} height=200 width=200>
+    </div>
+    <div id=profile_data>
+        Username: {{ userProfile.user.username }} <br>
+        Email: {{ userProfile.user.email }} <br>
+        {% comment %}
+        quando si sarà fatto anche la vendita effettiva vale la pena mettere anche un purchased item num
+        il feedback serve sia agli acquirenti che ai venditori!
+        Sold number {% sold_item_num %}
+        {% endcomment %}
+        Reliability {{ userProfile.feedback }} % <br>
+
+        {% if request.user == userProfile.user %}
+            Premium:
+            {% if not userProfile.premium %}
+                No &nbsp <br>
+                <form method='POST'>
+                    {% csrf_token %}
+                    <input type='submit' name='get_premium' value='Get Premium'>
+                </form>
+                Auction tokens: {{ userProfile.auction_count}}
+            {% else %}
+                Yes
+            {% endif %}
+        {% endif %}
+        <br><br>
+        {% if request.user == userProfile.user %}
+            <form enctype="multipart/form-data" method='POST'>
+                {% csrf_token %}
+                <input type='file' accept='.png, .jpg, .jpeg' name='update_pic' required/> <br>
+                <input type='submit' name='update_img' value='Update image'>
+            </form>
+        {% endif %}
+        <div>
+            {% if request.user != userProfile.user %}
+                {% if alreadySentForward %}
+                    Request pending.
+                {% elif alreadySentBack %}
+                    Request already sent to you.
+                {% else %}
+                    <form method='POST'>
+                        {% csrf_token %}
+                        <input type='submit' name='friend_request' value='Add to friend list'>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    </div>
+    <div id=lower>
+        {% if request.user == userProfile.user %}
+            <textarea style='resize:none; background-color:c6edab;'
+                rows=8 cols=80 name='description' form='desc_form'>
+                {{ userProfile.description }}
+            </textarea>
+            <form id='desc_form' method='POST'>
+                {% csrf_token %}
+                <input type='submit' name='update_desc' value='Update your description'>
+            </form>
+        {% else %}
+            descrizione:
+                {{ request.user.descrizione}}
+        {% endif %}
+    </div>
+</div>
+<div id=auction_data>
+    <p style='background-color:yellow'>
+        Active auctions:<br>
+        {% for auction in activeAuctions %}
+            <li style='background-color:azure'>
+                Nome dell'auction: {{ auction.title }}
+            </li>
+        {% endfor %}
+    </p>
+</div>
+{% endblock %}
