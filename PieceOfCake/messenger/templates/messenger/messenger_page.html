@@ -6,8 +6,8 @@
     #left_bar {
         padding: 3%;
         margin: 2% 2% 2% 5%;
-        min-width: 18%;
-        min-height: 64%;
+        width: 18%;
+        height: 64%;
         float: left;
 
         background: transparent url('../../../media/static_images/mobile_blue.png');
@@ -19,32 +19,30 @@
     #right_bar {
         padding: 3%;
         margin: 2%;
-        min-width: 50%;
-        min-height: 64%;
+        width: 50%;
+        height: 64%;
         background: #54e5a1;
-        float:left;
-
-        <!-- DA IMPLEMENTARE IN JAVASCRIPT LA FUNZIONE DI SCROLLING
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        -->
+        float: left;
     }
     #messages {
-        height:400px;
+        height: 45%;
+        width: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+
         background-color: #a1cbf3;
-        overflow-y: auto;
-        background-color: black;
     }
     .sent_message {
         margin: 1% 0%;
-        height: 20px;
+        height: 45px;
+        width: 100%;
         background-color: white;
     }
     .received_message {
         margin: 1% 0%;
-        height: 20px;
-        background-color: green;
+        height: 45px;
+        width: 100%;
+        background-color: #a3f8a6;
     }
 {% endblock %}
 {% block background %}
@@ -92,22 +90,24 @@
     </div>
     </div>
     <div id='right_bar'>
-        Messaging with {{ user_chat_with.username }} <br>
+        Chat with {{ user_chat_with.username }} <br><br>
         {% if chat_selected %}
         <div id='messages'>
             {% for mess in messages %}
                 {% if mess.sender == user_chat_with %}
                 <div class=sent_message>
-                    {{ mess.message }}  - {{ mess.datetime}}
+                    {{ mess.message }} - {{ mess.datetime}}
                 </div><br>
                 {% else %}
                 <div class=received_message>
-                    {{ mess.message }}  - {{ mess.datetime}}
+                    {{ mess.message }} - {{ mess.datetime}}
                 </div>
                 {% endif %}
             {% endfor %}
         </div>
-        <textarea style='resize:none' rows=10 cols=80 name='messageToBeSent' form='mess_form'>
+        <br>
+        <textarea style='resize:none' rows=6 cols=80 name='messageToBeSent'
+                                    maxlength=1000 form='mess_form'>
         </textarea>
         <form id='mess_form' method='POST'>
             {% csrf_token %}

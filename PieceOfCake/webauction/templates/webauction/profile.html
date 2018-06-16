@@ -82,7 +82,7 @@
         {% if request.user == userProfile.user %}
             Premium:
             {% if not userProfile.premium %}
-                No &nbsp <br>
+                No
                 <form method='POST'>
                     {% csrf_token %}
                     <input type='submit' name='get_premium' value='Get Premium'>

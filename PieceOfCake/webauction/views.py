@@ -146,10 +146,10 @@ def make_auction(request):
         minutes = int(minutes)
         now = timezone.localtime(timezone.now())
         expire_date = now + timedelta(days=days, hours=hours, minutes=minutes)
-        if minutes == 0 and hours == 0 and minutes == 0:
+        if days == 0 and hours == 0 and minutes == 0:
             error_message += ' Duration cannot be zero.'
         # controllo anche a lato server oltre che a livello di input form
-        elif minutes < 0 or hours < 0 or minutes < 0 or \
+        elif days < 0 or hours < 0 or minutes < 0 or \
              minutes >= 60 or hours >= 24 or days >= MAX_DURATION_DAY():
             error_message += ' Invalid duration value.'
 

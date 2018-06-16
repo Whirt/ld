@@ -8,6 +8,7 @@ from django.views import generic
 from webauction.models import UserProfile
 from .models import *
 from .forms import *
+from django.utils import timezone
 
 @login_required
 def messenger(request):
@@ -15,7 +16,7 @@ def messenger(request):
     right_notification = ''
     user_chat_with = 'None'
     chat_selected = False
-    all_messages = ['No messages']
+    all_messages_sorted = ['No messages']
     sorted_messages = ['No messages']
     if request.method == 'POST':
         if 'accept' in request.POST:
@@ -53,6 +54,13 @@ def messenger(request):
         all_received_messages = list(Message.objects.filter(
                 Q(sender=user_chat_with), Q(receiver=request.user)))
         all_messages = all_sent_messages + all_received_messages
+        # L'ordinamento avviene tramite la data, si ottiene la data,
+        # ne si calcola la differenza rispetto il momento attuale e
+        # in base alla differenza in secondi si mostra in ordine crescente
+        # di tempo, per ottenere dai più recenti ai più vecchi
+        now = timezone.localtime(timezone.now())
+        all_messages_sorted = sorted(all_messages,
+            key=lambda x: (now-x.datetime).total_seconds() , reverse=False)
 
     # Richieste inviate all'utente in attesa di conferma
     friendRequests = FriendRequest.objects.filter(Q(friend__exact=request.user), Q(accepted__exact=False))
@@ -80,7 +88,7 @@ def messenger(request):
              'numFriends': len(all_friends),
              'chat_selected':chat_selected,
              'user_chat_with':user_chat_with,
-             'messages':all_messages})
+             'messages':all_messages_sorted})
 
 
 class SearchUserView(generic.ListView):
