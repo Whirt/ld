@@ -13,7 +13,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, related_name="sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="receiver", on_delete=models.CASCADE)
     message = models.CharField(max_length=1000, blank=False)
-    datetime = models.DateField(auto_now_add=True)
+    datetime = models.DateTimeField(auto_now_add=True)
 
 """ FriendRequest è fatto modellato per funzionare in questa maniera:
 1. Serve per capire se due utenti sono amici

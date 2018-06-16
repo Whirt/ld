@@ -39,6 +39,7 @@ LOGIN_REDIRECT_URL = '/webauction/accounts/profile'
 # Application definition
 
 INSTALLED_APPS = [
+    'django_cron',
     'messenger.apps.MessengerConfig',
     'webauction.apps.WebauctionConfig',
     'django.contrib.admin',
@@ -57,6 +58,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CRON_CLASSES = [
+    "webauction.cron.AuctionExpiring",
 ]
 
 ROOT_URLCONF = 'PieceOfCake.urls'

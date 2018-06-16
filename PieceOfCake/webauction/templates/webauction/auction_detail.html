@@ -70,6 +70,7 @@
         Expiring date: {{ auction.expire_date }} <br>
         Current price: {{ auction.current_price }} <br>
         Minimum bid: {{ auction.min_bid }} <br>
+        Active: {{ auction.active }} <br>
         <form method=POST>
             {% csrf_token %}
             <input type="number" name="bid_value" step={{ auction.min_bid }}

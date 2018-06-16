@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-
 import datetime
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+
+from messenger.models import Message
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 def MAX_AUCT_COUNT():
         return 3
@@ -24,6 +26,9 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     feedback = models.FloatField(default=0)
+    # Per il sistema di feedback si ha sia il numero di sold_auction
+    # che il numero di voti
+    votes = models.IntegerField(default=0)
     auction_count = models.SmallIntegerField(default=3)
     premium = models.BooleanField(default=False)
     description = models.CharField(max_length=1000, default='')
@@ -66,3 +71,9 @@ class Auction(models.Model):
     active = models.BooleanField(default=True)
     category = models.CharField(max_length=50, default=('OT','Other'),
                                 choices=CATEGORY_CHOICES)
+
+# Estendo message in quanto l'unico attributo in piu' e' dato dal voto
+class Vote(Message):
+    def __str__(self):
+        return self.title
+    rating = models.SmallIntegerField(validators=[MaxValueValidator(10), MinValueValidator(1)])

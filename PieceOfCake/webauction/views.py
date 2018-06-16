@@ -10,7 +10,7 @@ from messenger.models import FriendRequest
 from .models import *
 from .forms import *
 import math
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 
 def index(request):
@@ -69,7 +69,7 @@ class SearchView(generic.ListView):
 
         # Ordino in maniera visualizzabile su template li raggruppo
         VISUAL_GROUP = 4
-        num_group = math.ceil(len(selected_auctions)/VISUAL_GROUP)
+        num_group = int(math.ceil(len(selected_auctions)/VISUAL_GROUP))
         grouped_selected_auctions = []
         for i in range(0, num_group):
             grouped_selected_auctions.append(

@@ -52,8 +52,12 @@
     </form>
 </div>
 <div id=result>
-    {% if not context.matching_auction_list and context.advanced %}
-        No results.
+    {% if not context.matching_auction_list and not context.advanced %}
+        {% if context.advanced %}
+            Advanced Mode search
+        {% else %}
+            No results.
+        {% endif %}
     {% endif %}
     <table>
         {% for group in context.matching_auction_list %}

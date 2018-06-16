@@ -4,6 +4,7 @@
 	source env/bin/activate
 
 Questo contiene gia le librerie 
+		-> Django-Cron per gli eventi temporali
 		-> Python Image Library (PIL)
 
 2. Per lanciare il server
