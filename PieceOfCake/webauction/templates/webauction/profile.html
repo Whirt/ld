@@ -8,35 +8,43 @@
         padding: 1% 1% 1% 1%;
         float: left;
         height: 85%;
-        min-width: 40%;
+        max-width: 40%;
         border: 5px;
-        background-color: #75e873;
+
         color: white;
+        background: url('../../../media/static_images/presentation_card.jpg');
+        background-size: 100% 100%;
+
+        overflow:hidden;
     }
     #upper {
         padding: 1%;
         height: 50%;
-        background-color: #75e873;
     }
     #profile_picture {
-        margin: 2%;
+        margin: 0% 2% 2% 2% ;
+        height:100%;
+        width:30%;
         float: left;
     }
     #profile_data {
-        margin: 2%;
+        margin: 1% 1% 1% 1%;
+        padding-left: 40%;
+
     }
     #lower {
-        padding: 1%;
+        margin: 7% 11% 0% 3%;
         text-align: center;
-        background-color: #75e873;
+        background-color: blue;
     }
     #auction_data {
         margin: 2% 2% 0 2%;
-        padding: 1%;
-        min-width: 40%;
-        height: 85%;
+        padding: 5%;
+        min-width: 35%;
+        height: 65%;
         float: left;
-        background-color: pink;
+        background: url('../../../media/static_images/note.png');
+        background-size: 100% 100%;
     }
 {% endblock %}
 {% block body %}
@@ -53,9 +61,10 @@
     </p>
     <div id=upper>
     <div id=profile_picture>
-        <img src={{ userProfile.profile_pic.url }} height=200 width=200>
+        <img src={{ userProfile.profile_pic.url }} style='height:220px; width:160px;'>
     </div>
     <div id=profile_data>
+        <!-- Generalità -->
         Username: {{ userProfile.user.username }} <br>
         Email: {{ userProfile.user.email }} <br>
         {% comment %}
@@ -65,6 +74,7 @@
         {% endcomment %}
         Reliability {{ userProfile.feedback }} % <br>
 
+        <!-- Premium activation -->
         {% if request.user == userProfile.user %}
             Premium:
             {% if not userProfile.premium %}
@@ -78,34 +88,11 @@
                 Yes
             {% endif %}
         {% endif %}
-        <br><br>
+
+        <!-- Descrizione -->
         {% if request.user == userProfile.user %}
-            <form enctype="multipart/form-data" method='POST'>
-                {% csrf_token %}
-                <input type='file' accept='.png, .jpg, .jpeg' name='update_pic' required/> <br>
-                <input type='submit' name='update_img' value='Update image'>
-            </form>
-        {% endif %}
-        <div>
-            {% if request.user != userProfile.user %}
-                {% if alreadySentForward %}
-                    Request pending.
-                {% elif alreadySentBack %}
-                    Request already sent to you.
-                {% else %}
-                    <form method='POST'>
-                        {% csrf_token %}
-                        <input type='submit' name='friend_request' value='Add to friend list'>
-                    </form>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-    </div>
-    <div id=lower>
-        {% if request.user == userProfile.user %}
-            <textarea style='resize:none; background-color:c6edab;'
-                rows=8 cols=80 name='description' form='desc_form'>
+            <textarea style='resize:none; background-color:c6edab; overflow-y:scroll'
+                rows=2 cols=30 name='description' form='desc_form'>
                 {{ userProfile.description }}
             </textarea>
             <form id='desc_form' method='POST'>
@@ -116,16 +103,47 @@
             descrizione:
                 {{ request.user.descrizione}}
         {% endif %}
+
+        <!-- Caricamento immagine -->
+        {% if request.user == userProfile.user %}
+            <form enctype="multipart/form-data" method='POST'>
+                {% csrf_token %}
+                <input type='file' accept='.png, .jpg, .jpeg' name='update_pic' required/> <br>
+                <input type='submit' name='update_img' value='Update image'>
+            </form>
+        {% endif %}
+
+        <!-- Richiesta amicizia -->
+        {% if request.user != userProfile.user %}
+            {% if alreadySentForward %}
+                Request pending.
+            {% elif alreadySentBack %}
+                Request already sent to you.
+            {% else %}
+                <form method='POST'>
+                    {% csrf_token %}
+                    <input type='submit' name='friend_request' value='Add to friend list'>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
+      <div style="clear:both;"></div>
+    </div>
+    <div id=lower>
+        COMMENTI COMEMNTI COMMENTI COMEMNTI
+        COMMENTI COMEMNTI
+        COMMENTI COMEMN
     </div>
 </div>
 <div id=auction_data>
-    <p style='background-color:yellow'>
-        Active auctions:<br>
+        <h3> Active auctions:<br> </h3>
         {% for auction in activeAuctions %}
-            <li style='background-color:azure'>
-                Nome dell'auction: {{ auction.title }}
+            <li>
+                <a href='{% url 'webauction:detail' auction.id %}'>
+                    {{ auction.title }}
+                </a>
             </li>
         {% endfor %}
-    </p>
 </div>
 {% endblock %}

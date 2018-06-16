@@ -6,13 +6,12 @@
     #auction_detail {
         height:100%;
         position:relative;
-        background-color: pink;
     }
     #left_panel {
         padding: 3%;
         margin: 2% 0% 2% 2%;
         float: left;
-        height: 70%;
+        height: 76%;
         width: 30%;
         background-color: orange;
     }
@@ -20,7 +19,7 @@
         padding: 3%;
         margin: 2% 2% 2% 0%;
         float: left;
-        height: 70%;
+        height: 76%;
         width: 50%;
         background-color: green;
     }
@@ -41,7 +40,7 @@
 {% block body %}
 <div id='auction_detail'>
     <div id='left_panel'>
-        <img src={{ auction.image.url }} height=350px length=350px> <br>
+        <img src={{ auction.image.url }} style='height:350px; width:400px;'> <br>
         Bids: {{ auction.bid_count }} <br>
         Last_bid_user:
         {% if auction.last_bid_user != None %}
