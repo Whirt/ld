@@ -8,13 +8,13 @@ import datetime
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
+def MAX_AUCT_COUNT():
+        return 3
+def MAX_DESCRIPTION_LEN():
+        return 1000
 class UserProfile(models.Model):
     def __str__(self):
         return "UserProfile username" + self.name;
-    def MAX_AUCT_COUNT():
-        return 3
-    def MAX_DESCRIPTION_LEN():
-        return 1000
 
     # questo fa si' che a ogni creazione di User si crei anche questo
     def create_user_profile(sender, instance, created, **kwargs):
@@ -37,14 +37,13 @@ class UserProfile(models.Model):
 CATEGORY_CHOICES = (('MS','Music'), ('BK','Book'), ('CL','Clothes'), ('TL','Tools'),
     ('EL','Electronics'), ('GM','Games'), ('HS','House'), ('OT','Other'))
 
+def MIN_BID():
+    return 0.50
+def MAX_DURATION_DAY():
+    return 30
 class Auction(models.Model):
     def __str__(self):
         return self.title
-    def MIN_BID():
-        return 0.50
-    def MAX_DURATION_DAY():
-        return 30
-
     # relazione ManyToOne
     seller = models.ForeignKey(User, related_name="seller", on_delete=models.CASCADE)
     title = models.CharField(max_length=100)

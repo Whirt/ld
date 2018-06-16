@@ -11,6 +11,7 @@ from .models import *
 from .forms import *
 import math
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 def index(request):
     return render(request, 'webauction/index.html')
@@ -139,19 +140,20 @@ def make_auction(request):
         days = request.POST['days']
         hours = request.POST['hours']
         minutes = request.POST['minutes']
+        print(days + ' ' + hours + ' ' + minutes)
         days = int(days)
         hours = int(hours)
         minutes = int(minutes)
-        now = datetime.now()
+        now = timezone.localtime(timezone.now())
         expire_date = now + timedelta(days=days, hours=hours, minutes=minutes)
         if minutes == 0 and hours == 0 and minutes == 0:
-            error_message += 'duration cannot be zero'
+            error_message += ' Duration cannot be zero.'
         # controllo anche a lato server oltre che a livello di input form
         elif minutes < 0 or hours < 0 or minutes < 0 or \
-             minutes >= 60 or hours >= 24 or days >= Auction.MAX_DURATION_DAY():
-            error_message += 'Invalid duration value'
+             minutes >= 60 or hours >= 24 or days >= MAX_DURATION_DAY():
+            error_message += ' Invalid duration value.'
 
-        if form.is_valid():
+        if error_message == '' and form.is_valid():
             seller = user
             title = form.cleaned_data['title']
             image = form.cleaned_data['image']
@@ -162,8 +164,8 @@ def make_auction(request):
             category = form.cleaned_data['category']
             #expire_date
 
-            if min_bid < Auction.MIN_BID() or min_price < min_bid:
-                error_message += 'invalid price or minimum value '
+            if min_bid < MIN_BID() or min_price < min_bid:
+                error_message += ' Invalid price or minimum value.'
             else:
                 auction = Auction(seller=seller, title=title, description=description,
                             image=image, expire_date=expire_date, min_price=min_price,
@@ -174,7 +176,7 @@ def make_auction(request):
                 userProfile.save()
                 return HttpResponseRedirect(reverse('webauction:success', args=[auction.id]))
         else:
-            error_message += 'invalid form wrong'
+            error_message += ' Check again the form.'
 
         # Error case
         form = MakeAuctionForm()
@@ -241,7 +243,7 @@ def profile(request, searched_username):
             new_description = request.POST['description']
             # C'è un controllo client side fatto con javascript e questo
             # è il controllo serverside!
-            if len(new_description) > UserProfile.MAX_DESCRIPTION_LEN():
+            if len(new_description) > MAX_DESCRIPTION_LEN():
                 context['error_message'] = 'Description maximum length overreached'
                 return render(request, 'webauction/profile.html', context)
             userProfile.description = new_description

@@ -40,7 +40,7 @@ def messenger(request):
             print('Chatto con ' + user_chat_with.username)
             if len(messageToBeSent) == 0:
                 right_notification += 'Message cannot be null'
-            elif len(messageToBeSent) > Message.MAX_LENGTH():
+            elif len(messageToBeSent) > MAX_MESSAGE_LENGTH():
                 right_notification += 'Message too long'
             else:
                 new_message = Message(sender=request.user, receiver=user_chat_with,

@@ -5,11 +5,11 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
+def MAX_MESSAGE_LENGTH():
+        return 1000;
 class Message(models.Model):
     def __str__(self):
         return "message beetween" + self.sender + "and" + self.receiver
-    def MAX_LENGTH():
-        return 1000;
     sender = models.ForeignKey(User, related_name="sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="receiver", on_delete=models.CASCADE)
     message = models.CharField(max_length=1000, blank=False)
