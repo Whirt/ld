@@ -12,20 +12,22 @@
     }
     #left_bar {
         padding: 3%;
-        margin: 2% 1% 2% 1%;
-        width: 24%;
-        height: 88%;
+        margin: 4% 1% 2% 20%;
+        width: 15%;
+        height: 60%;
         float: left;
+        background-color: blue;
     }
     #left_bar div {
         margin-top: 12%;
     }
     #right_bar {
         padding: 3%;
-        margin: 3% 2% 0% 0%;
-        width: 55%;
-        height: 88%;
+        margin: 4% 2% 0% 0%;
+        width: 30%;
+        height: 60%;
         float: left;
+        background-color: green;
     }
     #messages {
         height: 45%;
@@ -65,7 +67,7 @@
             {% endif %}
         </p>
         <form action="{% url 'messenger:search_user' %}" method='GET'>
-            <input type='text' name='keywords' size=10/>
+            <input type='text' name='keywords' size=20/>
             <input type='submit' value='search user'/>
         </form>
         <br>
@@ -114,7 +116,7 @@
             {% endfor %}
         </div>
         <br>
-        <textarea style='resize:none' rows=6 cols=80 name='messageToBeSent'
+        <textarea style='resize:none' rows=6 cols=50 name='messageToBeSent'
                                     maxlength=1000 form='mess_form'>
         </textarea>
         <form id='mess_form' method='POST'>

@@ -76,9 +76,21 @@ def MAX_VOTE_LENGTH():
     return 1000;
 class Vote(models.Model):
     def __str__(self):
-        return self.message
+        return self.message + ' from ' + sender.username + ' to ' + receiver.username
     sender = models.ForeignKey(User, related_name="vote_sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="vote_receiver", on_delete=models.CASCADE)
     message = models.CharField(max_length=1000, blank=False)
     datetime = models.DateTimeField(auto_now_add=True)
     rating = models.SmallIntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+
+class FollowedAuction(models.Model):
+    def __str__(self):
+        return self.follower.username + ' ' + self.auction.title
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
+    isActive = models.BooleanField(default=True)
+    follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
+    # E' opzionale, se alla scadenza dell'auction questo è None allora ho vinto
+    outBiddedBy = models.ForeignKey(User, related_name='outBiddedBy',
+                blank=True, null=True, default=None)
+    class Meta:
+        unique_together=(('auction','follower'))

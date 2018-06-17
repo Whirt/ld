@@ -120,12 +120,31 @@ def detail_auction(request, product_key):
             error_message = 'You are the current best bidder'
         elif auction.seller == request.user:
             error_message = 'Bidding on own auction is forbidden'
-        else:
+        else: # Caso di successo
+
+            # Controllo il followed di quello che ha scommesso precedentemente
+            if auction.last_bid_user != None:
+                getLastBidder = User.objects.filter(id__exact=auction.last_bid_user.id)
+                # Aggiorno il suo FollowedAuction
+                getHisFollowedAuction = FollowedAuction.objects.get(
+                            auction__exact=auction, follower=getLastBidder)
+                getHistFollowedAuction.outBiddedBy = request.user
+            # Controllo se esisteva gia un precedente followed
+            updateFollowed = FollowedAuction.objects.filter(
+                    auction__exact=auction, follower__exact=request.user)
+            if len(updateFollowed) == 0:
+                newFollowed = FollowedAuction(auction=auction, follower=request.user,
+                            outBiddedBy=None)
+                newFollowed.save()
+            else:
+                updateFollowed.outBiddedBy = None
+
             context['success_message'] = 'New bid successfully made'
             auction.last_bid_user = request.user
             auction.current_price = new_bid
             auction.bid_count = auction.bid_count + 1
             auction.save()
+
         context['error_message'] = error_message
     return render(request, 'webauction/auction_detail.html', context)
 
@@ -253,8 +272,13 @@ def profile(request, searched_username):
     # di tempo, per ottenere dai più recenti ai più vecchi
     now = timezone.localtime(timezone.now())
     all_votes_sorted = sorted(all_votes,
-        key=lambda x: (now-x.datetime).total_seconds() , reverse=False)
+        key=lambda x: (now-x.datetime).total_seconds(), reverse=False)
     context['all_votes'] = all_votes_sorted
+
+    # Get all active following auction
+    followedAuctions = FollowedAuction.objects.filter(
+        Q(follower__exact=request.user), Q(isActive__exact=True))
+    context['followedAuctions'] = followedAuctions
 
     if request.method == 'GET':
         return render(request, 'webauction/profile.html', context)

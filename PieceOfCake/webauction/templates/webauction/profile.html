@@ -187,12 +187,26 @@
     </div>
 </div>
 <div id=auction_data>
-        <h3> Active auctions:<br> </h3>
+        <h3> Following auctions: </h3>
+        {% for followed in followedAuctions %}
+            <li>
+                <a href='{% url 'webauction:detail' followed.auction.id %}'>
+                    {{ followed.auction.title }}
+                </a>
+                {% if followed.outBiddedBy == None %}
+                    --- You're ahead.
+                {% else %}
+                    --- Out bidded by {{ followed.outBiddedBy }}
+                {% endif %}
+            </li>
+        {% endfor %}
+        <h3> Active auctions: </h3>
         {% for auction in activeAuctions %}
             <li>
                 <a href='{% url 'webauction:detail' auction.id %}'>
                     {{ auction.title }}
                 </a>
+                --- Current price: {{ auction.current_price }}
             </li>
         {% endfor %}
 </div>

@@ -7,7 +7,7 @@
 
         <a href=/webauction/accounts/profile/{{ user.username }}>
             <img src="/media/static_images/person_profile.png"
-            width=30px height=40px>
+            width=30px height=40px> {{ user.username }}
         </a>
         <a href={% url 'messenger:messenger' %}>
             <img src="/media/static_images/mail_pic.png"
