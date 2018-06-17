@@ -105,11 +105,7 @@
         <!-- Generalità -->
         Username: {{ userProfile.user.username }} <br>
         Email: {{ userProfile.user.email }} <br>
-        {% comment %}
-        quando si sarà fatto anche la vendita effettiva vale la pena mettere anche un purchased item num
-        il feedback serve sia agli acquirenti che ai venditori!
-        Sold number {% sold_item_num %}
-        {% endcomment %}
+        Sold number {{ userProfile.sold_auction }}
         Reliability {{ userProfile.feedback }} % <br>
 
         <!-- Premium activation -->

@@ -18,13 +18,13 @@
             width=45px height=40px >
         </a>
     {% else %}
-        <a href={% url 'sign_up' %}>
-            <img src="/media/static_images/sign_up_button.png"
-            width=70px height=40px >
-        </a>
         <a href={% url 'login' %}>
             <img src="/media/static_images/login_button.png"
             width=70px 0px height=40px >
+        </a>
+        <a href={% url 'sign_up' %}>
+            <img src="/media/static_images/sign_up_button.png"
+            width=70px height=40px >
         </a>
     {% endif %}
 

@@ -7,27 +7,37 @@
     #auction_detail {
         height:100%;
         position:relative;
+        font-size:18px;
     }
     #left_panel {
-        padding: 3%;
-        margin: 2% 0% 2% 2%;
+        padding: 1%;
+        margin: 2% 0% 2% 5%;
         float: left;
-        height: 76%;
-        width: 30%;
-        background-color: orange;
+        height: 350px;
+        width: 400px;
+        text-align: center;
+        background: url('../../../media/static_images/brown_wood.jpeg');
+        background-size: 100% 100%;
     }
     #right_panel {
         padding: 3%;
-        margin: 2% 2% 2% 0%;
+        margin: 4% 2% 2% 4%;
         float: left;
-        height: 76%;
+        height: 70%;
         width: 50%;
-        background-color: green;
+    }
+    #user_data {
+        height: 55%;
+        width: 70%;
+        margin:1% 1% 1% 5%;
+        text-align: center;
     }
     #description {
-        height:70%;
-        margin:1%;
-        background-color: white;
+        padding: 4%;
+        height:36%;
+        width: 62%;
+        margin:4% 1% 1% 8%;
+        background-color: #EAF6F8;
         overflow-y: scroll;
     }
     #error_message {
@@ -38,11 +48,43 @@
         background-color: green;
     }
 {% endblock %}
+{% block bodystyle %}
+    background: url('../../../media/static_images/white_wallpaper_3_exp.png');
+    background-size: 100% 100%;
+{% endblock %}
 {% block body %}
 <div id='auction_detail'>
     <div id='left_panel'>
         <img src={{ auction.image.url }} style='height:350px; width:400px;'> <br>
-        Bids: {{ auction.bid_count }} <br>
+    </div>
+    <div id='right_panel'>
+        <div id='user_data'>
+        {% if error_message %}
+            <div id=error_message> {{ error_message}} </div>
+        {% endif %}
+        {% if success_message %}
+        <div id=success_message> {{ success_message }} </div>
+        {% endif %}
+        <span style='font-weight:bold'> Title: {{ auction.title }} </span><br>
+        <!-- Conto del tempo mancante tramite JavaScript -->
+        Time left:
+        {% if auction.active %}
+            <span class='time_left_span' style='color:blue'></span>
+        {% else %}
+            Expired.
+        {% endif %}
+        <br>
+        Current price: <span style = 'font-weight:bold'>{{ auction.current_price }} </span><br>
+        Minimum bid: {{ auction.min_bid }} <br>
+        <form method=POST>
+            {% csrf_token %}
+            <input type="number" name="bid_value" step={{ auction.min_bid }}
+
+            value={{ auction.current_price }}>
+            <input type="submit" name="make_bid"
+            value="Bid">
+        </form>
+        Bids: {{ auction.bid_count }} &nbsp&nbsp
         Last_bid_user:
         {% if auction.last_bid_user != None %}
         <a href='{% url 'webauction:profile' searched_username=auction.last_bid_user.username %}'>
@@ -50,40 +92,14 @@
         {% else %}
             None <br>
         {% endif %}
+        <br>
+        <span style='font-weight:bold'> Seller details </span>
         Seller:
         <a href='{% url 'webauction:profile' searched_username=auction.seller.username %}'>
             {{ auction.seller.username }} </a> <br>
         Reliability: {{ sellerProfile.feedback }} % <br>
         Seller sold number: {{ sellerProfile.sold_auction }} <br>
-    </div>
-    <div id='right_panel'>
-        {% if error_message %}
-            <div id=error_message> {{ error_message}} </div>
-        {% endif %}
-        {% if success_message %}
-        <div id=success_message> {{ success_message }} </div>
-        {% endif %}
-        Product: {{ auction.title }} <br>
-        <!-- Conto del tempo mancante tramite JavaScript -->
-        Time left:
-        {% if auction.active %}
-            <span class='time_left_span'></span>
-        {% else %}
-            Expired.
-        {% endif %}
-        <br>
-        Current price: {{ auction.current_price }} <br>
-        Minimum bid: {{ auction.min_bid }} <br>
-        Active: {{ auction.active }} <br>
-        <form method=POST>
-            {% csrf_token %}
-            <input type="number" name="bid_value" step={{ auction.min_bid }}
-
-            value={{ auction.current_price }}>
-            <input type="submit" name="make_bid"
-            value="Make a bid">
-        </form>
-
+        </div>
         <div id='description'>
         Description: <br>
         {{ auction.description}} <br>
