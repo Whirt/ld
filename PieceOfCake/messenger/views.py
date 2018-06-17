@@ -97,6 +97,7 @@ class SearchUserView(generic.ListView):
 
     def get_queryset(self):
         keywords = self.request.GET.get('keywords')
+        keywords = keywords.lower()
         print('keyword da provare: ' + keywords)
         keywords = keywords.split()
         # Ricerca in OR degli utenti

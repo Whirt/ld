@@ -8,7 +8,7 @@
         padding: 1% 1% 1% 1%;
         float: left;
         height: 85%;
-        max-width: 40%;
+        width: 40%;
         border: 5px;
 
         color: white;
@@ -34,20 +34,41 @@
     }
     #lower {
         margin: 7% 11% 0% 3%;
+        height: 30%;
         text-align: center;
-        background-color: blue;
+        color: #0e895f;
+        background-color: #67eec1;
+    }
+    #all_votes {
+        min-height: 60%;
+        max-height: 95%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background-color: #67eec1;
+    }
+    #all_votes div {
+        height:50px;
+        padding-top:1%;
+        margin-top:1%;
+        background-color: #a9f6dc;
+    }
+    #new_vote {
+        margin-top: 1%;
+        padding-bottom: 1%;
+        height: 30%;
+        background-color: black;
     }
     #auction_data {
         margin: 2% 2% 0 2%;
         padding: 5%;
-        min-width: 35%;
+        width: 35%;
         height: 65%;
         float: left;
         background: transparent url('../../../media/static_images/note.png');
         background-size: 100% 100%;
     }
 {% endblock %}
-{% block background %}
+{% block bodystyle %}
     background: url('../../../media/static_images/white_wood.jpg');
     background-size: 100% 100%;
 {% endblock %}
@@ -135,9 +156,34 @@
       <div style="clear:both;"></div>
     </div>
     <div id=lower>
-        COMMENTI COMEMNTI COMMENTI COMEMNTI
-        COMMENTI COMEMNTI
-        COMMENTI COMEMN
+        <div id=all_votes>
+        {% for vote in all_votes %}
+            <div>
+                {{ vote.sender }} : {{ vote.message }} - {{ vote.rating }} / 5 <br>
+                {{ vote.datetime }}
+            </div>
+        {% endfor %}
+        </div>
+        {% if request.user != userProfile.user and not voteExists %}
+        <div id=new_vote>
+        <!-- Per votare l'utente -->
+        <form id='vote_form' method='POST'>
+            {% csrf_token %}
+            <textarea style='resize:none' rows=1 cols=40 name='rateMessage'
+            maxlength=100 form='vote_form'></textarea>
+            <input type='hidden' name='username_chat_with'
+                    value={{ user_chat_with.username }} required>
+            <select name="rating">
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+            </select>
+            <input type='submit' name='new_vote' value='Vote'>
+        </form>
+        </div>
+        {% endif %}
     </div>
 </div>
 <div id=auction_data>

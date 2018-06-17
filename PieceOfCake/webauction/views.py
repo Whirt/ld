@@ -23,6 +23,7 @@ class SearchView(generic.ListView):
     def get_queryset(self):
         context = {}
         keywords = self.request.GET.get('keywords')
+        keywords = keywords.lower()
         category = self.request.GET.get('category_choice')
         if category != None:
             print('category:' + str(category))
@@ -51,21 +52,36 @@ class SearchView(generic.ListView):
         sorted_result = [ x[0] for x in sorted_result ]
         """
 
-        # Caso in cui la ricerca sia di default in AND
+        # Caso in cui la ricerca in AND (di default)
         if category != None and category != 'ALL':
             selected_auctions = Auction.objects.filter(active__exact=True, category__exact=category)
         else:
             selected_auctions = Auction.objects.filter(active__exact=True)
-
-        print(len(selected_auctions))
-
         keywords = keywords.split()
         for keyword in keywords:
+            # Selected_acution passo a passo subisce l'AND con ogni keyword
             selected_auctions = [ auction for auction in selected_auctions
-                                if keyword in auction.title ]
+                                if keyword in auction.title.lower() ]
 
-        # Di queste ordino sui feedback dei venditori
-        # !!!!!!!!!!!!!! DA IMPLEMENTARE
+        # Sorting
+        order_dir = self.request.GET.get('order_dir')
+        direction = False # going Up
+        if order_dir == 'HighToLow':
+            direction = True
+        order_by = self.request.GET.get('order_by')
+        if order_by == 'Data':
+            now = timezone.localtime(timezone.now())
+            selected_auctions = sorted(selected_auctions, \
+                key=lambda x: (now-x.pub_date).total_seconds() , reverse=direction)
+        if order_by == 'Price':
+            selected_auctions = sorted(selected_auctions, \
+                key=lambda x: x.current_price , reverse=direction)
+        if order_by == 'Reliability':
+            selected_auctions = sorted(selected_auctions, \
+                key=lambda x:
+                # Di queste ordino sui feedback dei venditori
+                # !!!!!!!!!!!!!! DA TESTARE
+                get_object_or_404(UserProfile, user=x.seller).feedback , reverse=direction)
 
         # Ordino in maniera visualizzabile su template li raggruppo
         VISUAL_GROUP = 2
@@ -83,7 +99,8 @@ class SearchView(generic.ListView):
 
 
 # In questo caso conviene usare la view diretto piuttosto che detail view
-# in quanto non si riuscirebbe a tirar fuori la request.user e altri parametri utili
+# in quanto non si riuscirebbe a tirar fuori la request.user in maniera semplice
+# e altri parametri utili
 def detail_auction(request, product_key):
     context = {}
     auction = get_object_or_404(Auction, pk=product_key)
@@ -215,16 +232,37 @@ def profile(request, searched_username):
     if searchedUser in friends_backward:
         requestIsSentBack = True
 
+    voteAlreadyExists = False
+
+    existingVote = Vote.objects.filter(receiver=userProfile.user, sender=request.user)
+    if len(existingVote) != 0:
+        voteAlreadyExists = True
+
     context = {}
     context['userProfile'] = userProfile
     context['alreadySentForward'] = requestIsSent
     context['alreadySentBack'] = requestIsSentBack
     context['activeAuctions'] = active_auction_list
+    context['voteExists'] = voteAlreadyExists
+
+    all_votes = Vote.objects.filter(receiver__exact=userProfile.user)
+    print(len(all_votes))
+    # L'ordinamento avviene tramite la data, si ottiene la data,
+    # ne si calcola la differenza rispetto il momento attuale e
+    # in base alla differenza in secondi si mostra in ordine crescente
+    # di tempo, per ottenere dai più recenti ai più vecchi
+    now = timezone.localtime(timezone.now())
+    all_votes_sorted = sorted(all_votes,
+        key=lambda x: (now-x.datetime).total_seconds() , reverse=False)
+    context['all_votes'] = all_votes_sorted
+
     if request.method == 'GET':
         return render(request, 'webauction/profile.html', context)
 
     if request.method == 'POST':
         success_message = ''
+
+        # --- Switch Case dei possibili eventi che hanno generato il POST ------
 
         # se si tratta di una richiesta di amicizia
         if 'friend_request' in request.POST:
@@ -264,6 +302,20 @@ def profile(request, searched_username):
             userProfile.premium = True
             userProfile.save()
             success_message = 'Premium activated'
+        elif 'new_vote' in request.POST:
+            # Suppongo che nessun utente possa votare due volte
+            # lo stesso utente, quindi devo effettuare un controllo.
+            # Ma il controllo viene fatto gia a livello di template, che non visualizza
+            # la possibilità di votare nel caso in cui esista gia
+            vote = request.POST['rating']
+            vote = int(vote)
+            rating_message = request.POST['rateMessage']
+            new_vote = Vote(sender=request.user, receiver=userProfile.user,
+                            message=rating_message, datetime=datetime,
+                            rating=vote)
+            new_vote.save()
+            voteAlreadyExists = True
+            success_message = 'Rated successfully'
 
         context['notification'] = success_message
         return render(request, 'webauction/profile.html', context)

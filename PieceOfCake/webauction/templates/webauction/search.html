@@ -21,9 +21,11 @@
         z-index: 1;
     }
 {% endblock %}
-{% block background %}
+{% block bodystyle %}
     background: url('../../../media/static_images/bamboo_flooring.jpg');
     background-size: 100% 100%;
+    overflow-x: auto;
+    overflow-y: scroll;
 {% endblock %}
 {% block body %}
 <div id=search_bar>
@@ -43,12 +45,12 @@
             <option value="OT">Other</option>
         </select>
         Order by:
-        <select name="category_choice">
-            <option value="Reliability">Reliability</option>
-            <option value="Price">Price</option>
+        <select name="order_by">
             <option value="Data">Data</option>
+            <option value="Price">Price</option>
+            <option value="Reliability">Reliability</option>
         </select>
-        <select name="Order">
+        <select name="order_dir">
             <option value="HighToLow">Highest to Lowest</option>
             <option value="LowToHigh">Lowest to Highest</option>
         </select>
@@ -67,10 +69,12 @@
         <tr>
             {% for auction in group %}
                 <td style='padding-right:15px; text-align:center;'>
-                    <a href='{% url 'webauction:detail' auction.id %}'>{{ auction.title }}</a><br>
+                    <a href='{% url 'webauction:detail' auction.id %}'>{{ auction.title }}</a>
+                    - Price: {{ auction.current_price }} <br>
+                    Expires: {{ auction.expire_date }} <br>
                     by
                     <a href='{% url 'webauction:profile' searched_username=auction.seller.username %}'>
-                            {{ auction.seller.username }}</a><br>
+                            {{ auction.seller.username }}</a>
                 </td>
             {% endfor %}
         </tr>

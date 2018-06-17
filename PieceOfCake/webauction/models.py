@@ -72,8 +72,13 @@ class Auction(models.Model):
     category = models.CharField(max_length=50, default=('OT','Other'),
                                 choices=CATEGORY_CHOICES)
 
-# Estendo message in quanto l'unico attributo in piu' e' dato dal voto
-class Vote(Message):
+def MAX_VOTE_LENGTH():
+    return 1000;
+class Vote(models.Model):
     def __str__(self):
-        return self.title
-    rating = models.SmallIntegerField(validators=[MaxValueValidator(10), MinValueValidator(1)])
+        return self.message
+    sender = models.ForeignKey(User, related_name="vote_sender", on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name="vote_receiver", on_delete=models.CASCADE)
+    message = models.CharField(max_length=1000, blank=False)
+    datetime = models.DateTimeField(auto_now_add=True)
+    rating = models.SmallIntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
