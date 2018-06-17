@@ -12,6 +12,7 @@ from .forms import *
 import math
 from datetime import timedelta
 from django.utils import timezone
+from chartit import DataPool, Chart
 
 def index(request):
     return render(request, 'webauction/index.html')
@@ -227,6 +228,47 @@ def make_auction(request):
 
 
 
+# Plotting di dati riguardanti le aste
+def expired_sold_auction(searched_user):
+    sold_auction = Auction.objects.filter(seller__exact=searched_user, active__exact=False)
+    len_sold_auction = len(sold_auction)
+    print(len_sold_auction)
+
+    if len_sold_auction == 0:
+        print('bbbbbbbbbb')
+        return
+    print('xxxxxxxxxxxx')
+
+    ds = DataPool(
+        series = [
+            {
+            'options': {'source': sold_auction},
+            'terms':   ['expire_date','current_price']
+            }
+        ]
+    )
+    chrt = Chart(
+        datasource = ds,
+        series_options = [
+            {
+            'options':{'type':'line', 'stacking':False},
+            'terms':{'expire_date': ['current_price']}
+            }
+        ],
+        chart_options = {
+            'title': {'text':''},
+            'xAxis': {
+                'title': {'text':'Data'}
+            }
+        }
+    )
+
+    return chrt
+
+
+def expired_auction_won(request):
+    return 1
+
 def profile(request, searched_username):
     if searched_username == '':
         searchedUser = request.user
@@ -251,21 +293,25 @@ def profile(request, searched_username):
     if searchedUser in friends_backward:
         requestIsSentBack = True
 
+    # Controllo se esiste gia un voto da parte dell'utente visitatore
     voteAlreadyExists = False
-
     existingVote = Vote.objects.filter(receiver=userProfile.user, sender=request.user)
     if len(existingVote) != 0:
         voteAlreadyExists = True
 
+    # Calcolo i grafici
+    chart_expired = expired_sold_auction(userProfile.user)
+
+    # Colleziono il context
     context = {}
     context['userProfile'] = userProfile
     context['alreadySentForward'] = requestIsSent
     context['alreadySentBack'] = requestIsSentBack
     context['activeAuctions'] = active_auction_list
     context['voteExists'] = voteAlreadyExists
+    context['sold_auction_history'] = chart_expired
 
     all_votes = Vote.objects.filter(receiver__exact=userProfile.user)
-    print(len(all_votes))
     # L'ordinamento avviene tramite la data, si ottiene la data,
     # ne si calcola la differenza rispetto il momento attuale e
     # in base alla differenza in secondi si mostra in ordine crescente

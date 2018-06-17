@@ -39,6 +39,7 @@ LOGIN_REDIRECT_URL = '/webauction/accounts/profile'
 # Application definition
 
 INSTALLED_APPS = [
+    'chartit',
     'django_cron',
     'messenger.apps.MessengerConfig',
     'webauction.apps.WebauctionConfig',

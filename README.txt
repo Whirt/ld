@@ -4,14 +4,14 @@
 	source env/bin/activate
 
 Questo contiene gia le librerie 
-		-> Django-Cron per gli eventi temporali
-		-> Python Image Library (PIL)
+		-> Django-Cron, per gli eventi temporali
+		-> Python Image Library (PIL), per le immagini
+		-> Django-Chartit, per i grafici
+					Che richiede:
+					-> python highcharts
+					-> python django-jquery
 
 2. Per lanciare il server
-  Se si e' saltato passaggio 1:
-	/env/local/bin/python PieceOfCake/manage.py runserver
-	
-	Se non si e' saltato il passaggio 1
 	python manage.py runserver
  	
 
