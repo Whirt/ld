@@ -2,6 +2,7 @@
 {% block title %}
     Risultati della ricerca
 {% endblock %}
+
 {% block style %}
     #auction_detail {
         height:100%;
@@ -63,10 +64,14 @@
         <div id=success_message> {{ success_message }} </div>
         {% endif %}
         Product: {{ auction.title }} <br>
-        <!-- POSSIBILE TIMER TRAMITE JAVASCRIPT !!!!!!!!!
-             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  -->
-        Expiring date: {{ auction.expire_date }} <br>
+        <!-- Conto del tempo mancante tramite JavaScript -->
+        Time left:
+        {% if auction.active %}
+            <span class='time_left_span'></span>
+        {% else %}
+            Expired.
+        {% endif %}
+        <br>
         Current price: {{ auction.current_price }} <br>
         Minimum bid: {{ auction.min_bid }} <br>
         Active: {{ auction.active }} <br>
@@ -85,4 +90,33 @@
         </div>
     </div>
 </div>
+
+{% if auction.active %}
+<!-- Questo script va in fondo perchè ha bisogno dei dati caricati prima -->
+<script id='time_left' difference_seconds={{ time_diff_seconds }}>
+    var time_left_span = document.getElementsByClassName('time_left_span');
+    time_left_span[0].innerHTML = 'ciao' ;
+    /* ps. notare che se l'utente cambia l'orologio del proprio pc, risulta
+    solamente in una scorretta visualizzazione senza influenzare in nessuna
+    maniera il browser */
+
+    /* Calculating difference */
+    var script = document.getElementById('time_left');
+    diff = script.getAttribute('difference_seconds');
+    var check = function(){
+        if(diff != 0){
+            days = Math.floor(diff/(3600*24));
+            hours = Math.floor((diff%(3600*24))/3600);
+            minutes = Math.floor((diff%(3600*24))%3600/60);
+            seconds = Math.floor(((diff%(3600*24))%3600)%60);
+            time_left_span[0].innerHTML = 'd'+days+' h'+hours+' m'+minutes+' s'+seconds;
+            diff -= 1
+            setTimeout(check, 1000); // check again in a second
+        }
+    }
+    check();
+
+</script>
+{% endif %}
+
 {% endblock %}

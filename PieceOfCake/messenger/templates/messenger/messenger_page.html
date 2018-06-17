@@ -12,41 +12,39 @@
     }
     #left_bar {
         padding: 3%;
-        margin: 4% 1% 2% 20%;
+        margin: 3% 0% 10% 17%;
         width: 15%;
-        height: 60%;
+        height: 68%;
         float: left;
-        background-color: blue;
+        overflow-y: auto;
+        background-color: #2ada9a;
     }
-    #left_bar div {
-        margin-top: 12%;
+    #left_bar img, input {
+        vertical-align:middle;
     }
     #right_bar {
         padding: 3%;
-        margin: 4% 2% 0% 0%;
-        width: 30%;
-        height: 60%;
+        margin: 3% 0% 0% 0%;
+        width: 38%;
+        height: 68%;
         float: left;
-        background-color: green;
+        background-color: white;
     }
     #messages {
-        height: 45%;
-        width: 100%;
+        padding: 1% 1% 1% 1%;
+        height: 65%;
+        width: 96%;
         overflow-y: scroll;
         overflow-x: hidden;
 
         background-color: #a1cbf3;
     }
     .sent_message {
-        margin-top: 1px;
-        margin-bottom: 1px;
         height: 60px;
         width: 100%;
         background-color: white;
     }
     .received_message {
-        margin-top: 1px;
-        margin-bottom: 1px;
         height: 60px;
         width: 100%;
         background-color: #a3f8a6;
@@ -70,8 +68,12 @@
             <input type='text' name='keywords' size=20/>
             <input type='submit' value='search user'/>
         </form>
+        <br>Num friends: {{ numFriends }}<br>
+        Pending requests
+        {% if not friendRequests %}
+            : None.
+        {% endif %}
         <br>
-        Pending requests <br>
         {% for request in friendRequests %}
             <li>
                 <form method='POST'>
@@ -85,18 +87,15 @@
         {% endfor %}
         <br> Friends: <br>
         {% for tuple in friends_plus_profile %}
-            <div>
-                <form method='POST'>
-                    {% csrf_token %}
-                    <img src={{ tuple.1.profile_pic.url }}
-                    style='height:35px; width:35px'>
-                    <input type='hidden' name='user_chat'
-                        value={{ tuple.0.username }}>
-                    <input type='submit' name='chat' value={{ tuple.0.username }}>
-                </form>
-            </div>
+            <form method='POST'>
+                {% csrf_token %}
+                <img src={{ tuple.1.profile_pic.url }}
+                style='height:40px; width:40px;'>
+                <input type='hidden' name='user_chat'
+                    value={{ tuple.0.username }}>
+                <input type='submit' name='chat' value={{ tuple.0.username }}>
+            </form>
         {% endfor %}
-    <br>Num friends: {{ numFriends }}
     </div>
     </div>
     <div id='right_bar'>
@@ -116,7 +115,7 @@
             {% endfor %}
         </div>
         <br>
-        <textarea style='resize:none' rows=6 cols=50 name='messageToBeSent'
+        <textarea style='resize:none' rows=2 cols=50 name='messageToBeSent'
                                     maxlength=1000 form='mess_form'>
         </textarea>
         <form id='mess_form' method='POST'>

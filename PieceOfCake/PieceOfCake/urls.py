@@ -15,5 +15,5 @@ urlpatterns = [
     # logout deve stare sopra, così segue prima quello personalizzato prima
     url(r'^', include('django.contrib.auth.urls')),
         url(r'^sign_up/$', views.sign_up, name='sign_up'),
-  # senza questa riga le immagini non caricano
+  # questo serve affinchè venga cercato nella directory corretta l'img
 ] +static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

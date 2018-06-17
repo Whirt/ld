@@ -2,6 +2,10 @@
 {% block title %}
     {{ userProfile.user.username }} profile
 {% endblock %}
+{% block scripts %}
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+{% endblock %}
 {% block style %}
     #profile {
         margin: 2% 2% 0 2%;
@@ -41,7 +45,7 @@
     }
     #all_votes {
         min-height: 60%;
-        max-height: 95%;
+        max-height: 85%;
         overflow-y: scroll;
         overflow-x: hidden;
         background-color: #67eec1;
@@ -53,10 +57,13 @@
         background-color: #a9f6dc;
     }
     #new_vote {
-        margin-top: 1%;
-        padding-bottom: 1%;
-        height: 30%;
-        background-color: black;
+        height: 40px;
+        background-color: #a9f6dc;
+    }
+    #new_vote textarea, input {
+        vertical-align:middle;
+        font-family: "Arial Black", Gadget, sans-serif
+        font-size: 10px;
     }
     #container_auction_data {
         margin: 2% 2% 2% 2%;
@@ -80,16 +87,16 @@
 {% endblock %}
 {% block body %}
 <div id=profile>
-    <p style='background-color:#66ff99'>
+    <span style='background-color:#66ff99; '>
         {% if notification %}
             {{ notification }}
         {% endif %}
-    </p>
-    <p style='background-color:red'>
+    </span>
+    <span style='background-color:red;'>
         {% if error_message %}
             {{ error_message }}
         {% endif %}
-    </p>
+    </span>
     <div id=upper>
     <div id=profile_picture>
         <img src={{ userProfile.profile_pic.url }} style='height:220px; width:160px;'>
@@ -175,8 +182,8 @@
         <!-- Per votare l'utente -->
         <form id='vote_form' method='POST'>
             {% csrf_token %}
-            <textarea style='resize:none' rows=1 cols=40 name='rateMessage'
-            maxlength=100 form='vote_form'></textarea>
+            <textarea style='resize:none;' rows=1 cols=40 name='rateMessage'
+                maxlength=100 form='vote_form'></textarea>
             <input type='hidden' name='username_chat_with'
                     value={{ user_chat_with.username }} required>
             <select name="rating">
@@ -217,10 +224,14 @@
             </li>
         {% endfor %}
         <h3> Expired auction history </h3>
-        {% load chartit %}
-        <div id='chartolino'>
-            {{ sold_auction_history|load_charts:"chartolino" }}
-        </div>
+        {% if sold_auction_history %}
+            {% load chartit %}
+            <div id='chartolino'>
+                {{ sold_auction_history|load_charts:"chartolino" }}
+            </div>
+        {% else %}
+            No expired auctions.
+        {% endif %}
         {% comment %}
         {% endcomment %}
 </div>

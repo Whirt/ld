@@ -108,6 +108,13 @@ def detail_auction(request, product_key):
     context['auction'] = auction
     context['sellerProfile'] = get_object_or_404(UserProfile, user=auction.seller)
 
+    if auction.active:
+        # Differenza dei tempi per lo script
+        now = timezone.localtime(timezone.now())
+        elapsed = auction.expire_date - now
+        time_difference = elapsed.total_seconds()
+        context['time_diff_seconds'] = time_difference
+
     if request.method == 'POST':
         new_bid = request.POST['bid_value']
         new_bid = new_bid.replace(',','.')
@@ -147,6 +154,7 @@ def detail_auction(request, product_key):
             auction.save()
 
         context['error_message'] = error_message
+
     return render(request, 'webauction/auction_detail.html', context)
 
 @login_required
@@ -227,7 +235,6 @@ def make_auction(request):
         return render(request, 'webauction/make_auction.html', context)
 
 
-
 # Plotting di dati riguardanti le aste
 def expired_sold_auction(searched_user):
     sold_auction = Auction.objects.filter(seller__exact=searched_user, active__exact=False)
@@ -235,9 +242,7 @@ def expired_sold_auction(searched_user):
     print(len_sold_auction)
 
     if len_sold_auction == 0:
-        print('bbbbbbbbbb')
         return
-    print('xxxxxxxxxxxx')
 
     ds = DataPool(
         series = [
@@ -308,7 +313,6 @@ def profile(request, searched_username):
     context['alreadySentForward'] = requestIsSent
     context['alreadySentBack'] = requestIsSentBack
     context['activeAuctions'] = active_auction_list
-    context['voteExists'] = voteAlreadyExists
     context['sold_auction_history'] = chart_expired
 
     all_votes = Vote.objects.filter(receiver__exact=userProfile.user)
@@ -372,7 +376,7 @@ def profile(request, searched_username):
             userProfile.premium = True
             userProfile.save()
             success_message = 'Premium activated'
-        elif 'new_vote' in request.POST:
+        elif not voteAlreadyExists and 'new_vote' in request.POST:
             # Suppongo che nessun utente possa votare due volte
             # lo stesso utente, quindi devo effettuare un controllo.
             # Ma il controllo viene fatto gia a livello di template, che non visualizza
@@ -386,6 +390,10 @@ def profile(request, searched_username):
             new_vote.save()
             voteAlreadyExists = True
             success_message = 'Rated successfully'
+            # lo aggiungo ai voti così si vede direttamente
+            all_votes_sorted.append(new_vote)
+
+        context['voteExists'] = voteAlreadyExists
 
         context['notification'] = success_message
         return render(request, 'webauction/profile.html', context)
