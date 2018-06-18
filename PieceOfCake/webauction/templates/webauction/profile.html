@@ -6,7 +6,17 @@
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     {% load chartit %}
-    {{ charts|load_charts:"sold_chart, won_chart"}}
+    {% if chart_expired != None and chart_won == None %}
+        {{ charts|load_charts:"sold_chart"}}
+    {% elif chart_expired == None and chart_won != None %}
+        {{ charts|load_charts:"won_chart"}}
+    {% elif chart_expired != None and chart_won != None %}
+        {{ charts|load_charts:"sold_chart, won_chart"}}
+    {% else %}
+        <!-- Nothing is gonna be loaded -->
+    {% endif %}
+    {% comment %}
+    {% endcomment %}
 {% endblock %}
 {% block style %}
     #profile {
@@ -109,13 +119,11 @@
         <img src={{ userProfile.profile_pic.url }} style='height:220px; width:160px;'>
     </div>
     <div id=profile_data>
-        <!-- Generalità -->
         Username: {{ userProfile.user.username }} <br>
         Email: {{ userProfile.user.email }} <br>
         Sold number: {{ userProfile.sold_auction }}
         Feedback: {{ userProfile.feedback }} % <br>
 
-        <!-- Premium activation -->
         {% if request.user == userProfile.user %}
             Premium:
             {% if not userProfile.premium %}
@@ -130,7 +138,6 @@
             {% endif %}
         {% endif %}
 
-        <!-- Descrizione -->
         {% if request.user == userProfile.user %}
             <textarea style='resize:none; background-color:c6edab; overflow-y:scroll'
                 rows=2 cols=30 name='description' form='desc_form'>
@@ -144,7 +151,7 @@
             Descrizione: <br>
                 {{ request.user.descrizione}} <br>
         {% endif %}
-        <!-- Caricamento immagine -->
+
         {% if request.user == userProfile.user %}
             <form enctype="multipart/form-data" method='POST'>
                 {% csrf_token %}
@@ -153,7 +160,6 @@
             </form>
         {% endif %}
 
-        <!-- Richiesta amicizia -->
         {% if request.user != userProfile.user %}
             Friendship:
             {% if alreadySentForward %}
@@ -182,7 +188,7 @@
         </div>
         {% if request.user != userProfile.user and not voteExists %}
         <div id=new_vote>
-        <!-- Per votare l'utente -->
+
         <form id='vote_form' method='POST'>
             {% csrf_token %}
             <textarea style='resize:none;' rows=1 cols=40 name='rateMessage'
@@ -229,8 +235,7 @@
         <h3> Sold auction history </h3>
 
 
-        {% load chartit %}
-        {% if sorted_sold_auction %}
+        {% if chart_expired != None  %}
             <div id='sold_chart'></div>
         {% else %}
             No expired auctions.
@@ -247,7 +252,7 @@
 
         {% if request.user == userProfile.user %}
         <h3> Won auction history </h3>
-            {% if sorted_won_auction %}
+            {% if chart_won != None %}
                 <div id='won_chart'></div>
             {% else %}
                 Never won any auction.

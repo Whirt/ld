@@ -277,12 +277,10 @@ def get_pool(auctions):
 
     return chrt
 
-def expired_won_auction(searched_user):
-
-    return get_pool(won_auction)
-
-
 def profile(request, searched_username):
+
+    print('inizio')
+
     if searched_username == '':
         searchedUser = request.user
     else:
@@ -313,15 +311,16 @@ def profile(request, searched_username):
         voteAlreadyExists = True
 
     # Calcolo i grafici
+    chart_expired = None
+    chart_won = None
+    sorted_sold_auction = []
+    sorted_won_auction = []
     sold_auction = Auction.objects.filter(Q(seller__exact=userProfile.user, active__exact=False),
         ~Q(last_bid_user__exact=None))
     now = timezone.localtime(timezone.now())
     sorted_sold_auction = sorted(sold_auction, \
         key=lambda x: (now-x.pub_date).total_seconds() , reverse=False)
     chart_expired = get_pool(sold_auction)
-    chart_won = []
-
-    sorted_won_auction = []
     if userProfile.user == request.user:
         won_auction = Auction.objects.filter(last_bid_user__exact=request.user, active__exact=False)
         now = timezone.localtime(timezone.now())
@@ -337,7 +336,18 @@ def profile(request, searched_username):
     context['activeAuctions'] = active_auction_list
     context['sorted_sold_auction'] = sorted_sold_auction
     context['sorted_won_auction'] = sorted_won_auction
-    context['charts'] = [chart_expired, chart_won]
+    # Questa rindondanza è dovuto alla necessità del pacchetto chartit
+    # di avere gli elementi in lista, tuttavia qualora qualcosa fosse
+    # null manda direttamente in errore, per questo bisogna farlo artigianalmente
+    # il controllo
+    context['chart_expired'] = chart_expired
+    context['chart_won'] = chart_won
+    if chart_expired != None and chart_won != None:
+        context['charts'] = [chart_expired, chart_won]
+    elif chart_expired == None and chart_won != None:
+        context['charts'] = chart_won
+    elif chart_expired != None and chart_won == None:
+        context['charts'] = chart_expired
 
     all_votes = Vote.objects.filter(receiver__exact=userProfile.user)
     # L'ordinamento avviene tramite la data, si ottiene la data,
@@ -422,4 +432,5 @@ def profile(request, searched_username):
         context['voteExists'] = voteAlreadyExists
 
         context['notification'] = success_message
+
         return render(request, 'webauction/profile.html', context)
