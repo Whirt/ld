@@ -234,20 +234,16 @@ def make_auction(request):
         context['form'] = form
         return render(request, 'webauction/make_auction.html', context)
 
+def get_pool(auctions):
 
-# Plotting di dati riguardanti le aste
-def expired_sold_auction(searched_user):
-    sold_auction = Auction.objects.filter(seller__exact=searched_user, active__exact=False)
-    len_sold_auction = len(sold_auction)
-    print(len_sold_auction)
-
+    len_sold_auction = len(auctions)
     if len_sold_auction == 0:
         return
 
     ds = DataPool(
         series = [
             {
-            'options': {'source': sold_auction},
+            'options': {'source': auctions},
             'terms':   ['expire_date','current_price']
             }
         ]
@@ -270,9 +266,10 @@ def expired_sold_auction(searched_user):
 
     return chrt
 
+def expired_won_auction(searched_user):
 
-def expired_auction_won(request):
-    return 1
+    return get_pool(won_auction)
+
 
 def profile(request, searched_username):
     if searched_username == '':
@@ -286,9 +283,9 @@ def profile(request, searched_username):
 
     # Controllo tutte quelle nella direzione da utente ad altri
     friendRequests_forward = FriendRequest.objects.filter(
-                    Q(friend_of__exact=request.user), Q(accepted__exact=False))
+                    Q(friend_of__exact=request.user))
     friendRequests_backward = FriendRequest.objects.filter(
-                    Q(friend__exact=request.user), Q(accepted__exact=False))
+                    Q(friend__exact=request.user))
     friends_forward = [ friendrequest.friend for friendrequest in friendRequests_forward ]
     friends_backward = [ friendrequest.friend_of for friendrequest in friendRequests_backward ]
     requestIsSent = False
@@ -305,7 +302,19 @@ def profile(request, searched_username):
         voteAlreadyExists = True
 
     # Calcolo i grafici
-    chart_expired = expired_sold_auction(userProfile.user)
+    sold_auction = Auction.objects.filter(Q(seller__exact=userProfile.user), Q(active__exact=False),
+        ~Q(last_bid_user__exact=None))
+    now = timezone.localtime(timezone.now())
+    sorted_sold_auction = sorted(sold_auction, \
+        key=lambda x: (now-x.pub_date).total_seconds() , reverse=False)
+    chart_expired = get_pool(sold_auction)
+    chart_won = []
+    if userProfile.user == request.user:
+        won_auction = Auction.objects.filter(last_bid_user__exact=request.user, active__exact=False)
+        now = timezone.localtime(timezone.now())
+        sorted_won_auction = sorted(won_auction, \
+            key=lambda x: (now-x.pub_date).total_seconds() , reverse=False)
+        chart_won = get_pool(won_auction)
 
     # Colleziono il context
     context = {}
@@ -313,7 +322,10 @@ def profile(request, searched_username):
     context['alreadySentForward'] = requestIsSent
     context['alreadySentBack'] = requestIsSentBack
     context['activeAuctions'] = active_auction_list
+    context['sorted_sold_auction'] = sorted_sold_auction
     context['sold_auction_history'] = chart_expired
+    context['sorted_won_auction'] = sorted_won_auction
+    context['won_auction_history'] = chart_won
 
     all_votes = Vote.objects.filter(receiver__exact=userProfile.user)
     # L'ordinamento avviene tramite la data, si ottiene la data,
@@ -326,6 +338,8 @@ def profile(request, searched_username):
     context['all_votes'] = all_votes_sorted
 
     # Get all active following auction
+    # Nota: Se anche dopo aver vinto compare tra le active probabilmente non è stato
+    # attivato la cron function!
     followedAuctions = FollowedAuction.objects.filter(
         Q(follower__exact=request.user), Q(isActive__exact=True))
     context['followedAuctions'] = followedAuctions

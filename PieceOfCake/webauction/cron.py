@@ -21,6 +21,10 @@ class AuctionExpiring(CronJobBase):
                 print(auction.title + ' ...Getting disabled')
                 auction.active = False
                 auction.save()
+                allFollowed = FollowedAuction.objects.filter(auction=auction)
+                for follow in allFollowed:
+                    follow.isActive = False
+                    follow.save()
                 seller = auction.seller
                 sellerProfile = get_object_or_404(UserProfile, user=seller)
                 if auction.last_bid_user != None:

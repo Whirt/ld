@@ -21,22 +21,22 @@
     }
     #right_panel {
         padding: 3%;
-        margin: 4% 2% 2% 4%;
+        margin: 2% 2% 2% 4%;
         float: left;
         height: 70%;
         width: 50%;
     }
     #user_data {
-        height: 55%;
+        height: 65%;
         width: 70%;
         margin:1% 1% 1% 5%;
         text-align: center;
     }
     #description {
         padding: 4%;
-        height:36%;
+        height: 36%;
         width: 62%;
-        margin:4% 1% 1% 8%;
+        margin: 2% 1% 1% 8%;
         background-color: #EAF6F8;
         overflow-y: scroll;
     }
@@ -45,6 +45,7 @@
         background-color: red;
     }
     #success_message {
+        color:white;
         background-color: green;
     }
 {% endblock %}
@@ -60,10 +61,10 @@
     <div id='right_panel'>
         <div id='user_data'>
         {% if error_message %}
-            <div id=error_message> {{ error_message}} </div>
+            <span id=error_message> {{ error_message}} </span><br>
         {% endif %}
         {% if success_message %}
-        <div id=success_message> {{ success_message }} </div>
+        <span id=success_message> {{ success_message }} </span><br>
         {% endif %}
         <span style='font-weight:bold'> Title: {{ auction.title }} </span><br>
         <!-- Conto del tempo mancante tramite JavaScript -->
@@ -97,7 +98,7 @@
         Seller:
         <a href='{% url 'webauction:profile' searched_username=auction.seller.username %}'>
             {{ auction.seller.username }} </a> <br>
-        Reliability: {{ sellerProfile.feedback }} % <br>
+        Feedback: {{ sellerProfile.feedback }} % <br>
         Seller sold number: {{ sellerProfile.sold_auction }} <br>
         </div>
         <div id='description'>
@@ -120,7 +121,7 @@
     var script = document.getElementById('time_left');
     diff = script.getAttribute('difference_seconds');
     var check = function(){
-        if(diff != 0){
+        if(diff >= 0){
             days = Math.floor(diff/(3600*24));
             hours = Math.floor((diff%(3600*24))/3600);
             minutes = Math.floor((diff%(3600*24))%3600/60);

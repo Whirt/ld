@@ -34,7 +34,6 @@
     #profile_data {
         margin: 1% 1% 1% 1%;
         padding-left: 40%;
-
     }
     #lower {
         margin: 7% 11% 0% 3%;
@@ -78,7 +77,13 @@
         width: 100%;
         height: 100%;
         overflow-y: auto;
-        overflow-x: hidden;
+        overflow-x: auto;
+    }
+    .history {
+        margin-top:3%;
+        height:20%;
+        overflow-y: auto;
+        overflow-x: auto;
     }
 {% endblock %}
 {% block bodystyle %}
@@ -105,8 +110,8 @@
         <!-- Generalità -->
         Username: {{ userProfile.user.username }} <br>
         Email: {{ userProfile.user.email }} <br>
-        Sold number {{ userProfile.sold_auction }}
-        Reliability {{ userProfile.feedback }} % <br>
+        Sold number: {{ userProfile.sold_auction }}
+        Feedback: {{ userProfile.feedback }} % <br>
 
         <!-- Premium activation -->
         {% if request.user == userProfile.user %}
@@ -134,10 +139,9 @@
                 <input type='submit' name='update_desc' value='Update your description'>
             </form>
         {% else %}
-            descrizione:
-                {{ request.user.descrizione}}
+            Descrizione: <br>
+                {{ request.user.descrizione}} <br>
         {% endif %}
-
         <!-- Caricamento immagine -->
         {% if request.user == userProfile.user %}
             <form enctype="multipart/form-data" method='POST'>
@@ -149,10 +153,11 @@
 
         <!-- Richiesta amicizia -->
         {% if request.user != userProfile.user %}
+            Friendship:
             {% if alreadySentForward %}
-                Request pending.
+                Already friend or request pending.
             {% elif alreadySentBack %}
-                Request already sent to you.
+                Already friend or request sent to you.
             {% else %}
                 <form method='POST'>
                     {% csrf_token %}
@@ -219,17 +224,43 @@
                 --- Current price: {{ auction.current_price }}
             </li>
         {% endfor %}
-        <h3> Expired auction history </h3>
+        <h3> Sold auction history </h3>
         {% if sold_auction_history %}
             {% load chartit %}
-            <div id='chartolino'>
-                {{ sold_auction_history|load_charts:"chartolino" }}
+            <div id='expired_auction_chart'>
+                {{ sold_auction_history|load_charts:"expired_auction_chart" }}
             </div>
         {% else %}
             No expired auctions.
         {% endif %}
-        {% comment %}
-        {% endcomment %}
+        <div class="history">
+            {% for auction in sorted_sold_auction %}
+                <li>
+                    <a href='{% url 'webauction:detail' auction.id %}'>
+                        {{ auction.title }}
+                    </a> won by {{ auction.last_bid_user }}
+                </li>
+            {% endfor %}
+        </div>
+        <h3> Won auction history </h3>
+        {% if request.user == userProfile.user %}
+            {% if won_auction_history %}
+                <div id='won_auction_chart'>
+                    {{ won_auction_history|load_charts:"won_auction_chart" }}
+                </div>
+            {% else %}
+                Never won any auction.
+            {% endif %}
+        {% endif %}
+        <div class="history">
+            {% for auction in sorted_won_auction %}
+            <li>
+                You've won <a href='{% url 'webauction:detail' auction.id %}'>
+                    {{ auction.title }}
+                </a> 's auction.
+            </li>
+            {% endfor %}
+        </div>
 </div>
 </div>
 {% endblock %}

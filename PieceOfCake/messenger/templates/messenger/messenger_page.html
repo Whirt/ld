@@ -89,8 +89,9 @@
         {% for tuple in friends_plus_profile %}
             <form method='POST'>
                 {% csrf_token %}
+                <a href='{% url 'webauction:profile' searched_username=tuple.0.username %}'>
                 <img src={{ tuple.1.profile_pic.url }}
-                style='height:40px; width:40px;'>
+                style='height:40px; width:40px;'></a>
                 <input type='hidden' name='user_chat'
                     value={{ tuple.0.username }}>
                 <input type='submit' name='chat' value={{ tuple.0.username }}>
