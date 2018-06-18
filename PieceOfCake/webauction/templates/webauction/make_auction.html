@@ -14,6 +14,7 @@
             background-color: white;
         }
         #auction_header {
+            padding-top: 5%;
             height: 10%;
             text-align: center;
             background-color: #fffac7;
@@ -39,8 +40,7 @@
 {% block body %}
 <div id='auction_data'>
     <div id=auction_header>
-    WARNING: Once is published it cannot be modified.
-    But can be canceled<br>
+    Making a new auction<br>
     {% if error_message %}
         <p style='background-color:red'>
             Something gone wrong {{error_message}}

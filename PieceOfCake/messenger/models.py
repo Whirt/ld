@@ -9,7 +9,7 @@ def MAX_MESSAGE_LENGTH():
         return 1000;
 class Message(models.Model):
     def __str__(self):
-        return "message beetween" + self.sender + "and" + self.receiver
+        return "message beetween" + self.sender.username + "and" + self.receiver.username
     sender = models.ForeignKey(User, related_name="sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="receiver", on_delete=models.CASCADE)
     message = models.CharField(max_length=1000, blank=False)
@@ -23,7 +23,7 @@ colui che può accettarla
 """
 class FriendRequest(models.Model):
     def __str__(self):
-        return self.friend_of + "and" + self.friend + " friend request."
+        return self.friend_of.username + "and" + self.friend.username + " friend request."
     friend_of = models.ForeignKey(User, related_name="friend_of", on_delete=models.CASCADE)
     friend = models.ForeignKey(User, related_name="friend", on_delete=models.CASCADE)
     accepted = models.BooleanField(default=False)

@@ -16,7 +16,7 @@ def MAX_DESCRIPTION_LEN():
         return 1000
 class UserProfile(models.Model):
     def __str__(self):
-        return "UserProfile username" + self.name;
+        return "UserProfile username" + self.user.username;
 
     # questo fa si' che a ogni creazione di User si crei anche questo
     def create_user_profile(sender, instance, created, **kwargs):
@@ -56,6 +56,7 @@ class Auction(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='auction_img/%Y/%m/%d/')
     description = models.CharField(max_length=5000)
+    # Utile anche a fini statistici
     pub_date = models.DateTimeField(auto_now_add=True)
     # Il valore di default è il giorno stesso della pubbicazione
     # e svolge la funzione da segnalatore di errore
@@ -85,7 +86,7 @@ def MAX_VOTE_NUM():
     return 5
 class Vote(models.Model):
     def __str__(self):
-        return self.message + ' from ' + sender.username + ' to ' + receiver.username
+        return self.message + ' from ' + self.sender.username + ' to ' + self.receiver.username
     sender = models.ForeignKey(User, related_name="vote_sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="vote_receiver", on_delete=models.CASCADE)
     message = models.CharField(max_length=1000, blank=False)
