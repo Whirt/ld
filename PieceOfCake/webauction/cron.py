@@ -11,7 +11,28 @@ class AuctionExpiring(CronJobBase):
     code = 'webauction.auction_expire'    # a unique code
 
     def do(self):
+        # ---------- Controllo l'incremento degli auction token --------------
+        nonPremiumUser = UserProfile.objects.filter(premium__exact=False)
         now = timezone.localtime(timezone.now())
+        for user in nonPremiumUser:
+            # Il primo di ogni mese alle ore 0 e 0 minuti incremento
+            # il token, incentivando quindi fortemente al premium
+            if now.day == 1 and now.hour == 0 and now.minute == 1:
+                if user.auction_count < MAX_AUCT_COUNT:
+                    user.auction_count = user.auction_count + 1
+                    user.save()
+
+        # -------------- Controllo tutti gli oggetti premium ---------------
+        premiumAuction = Auction.objects.filter(active__exact=True, premium_active__exact=True)
+        for auction in premiumAuction:
+            elapsed = now - auction.premium_date
+            time_difference = elapsed.total_seconds()
+            print(time_difference)
+            if time_difference >= 0:
+                auction.premium_active=False
+                auction.save()
+
+        # -------------- Controllo Aste in corso -----------------------------
         all_active_auctions = Auction.objects.filter(active=True)
         for auction in all_active_auctions:
             elapsed = now - auction.expire_date

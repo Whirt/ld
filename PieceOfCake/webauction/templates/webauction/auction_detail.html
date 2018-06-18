@@ -77,6 +77,7 @@
         <br>
         Current price: <span style = 'font-weight:bold'>{{ auction.current_price }} </span><br>
         Minimum bid: {{ auction.min_bid }} <br>
+        {% if not auction.premium_active %}
         <form method=POST>
             {% csrf_token %}
             <input type="number" name="bid_value" step={{ auction.min_bid }}
@@ -85,6 +86,7 @@
             <input type="submit" name="make_bid"
             value="Bid">
         </form>
+        {% endif %}
         Bids: {{ auction.bid_count }} &nbsp&nbsp
         Last_bid_user:
         {% if auction.last_bid_user != None %}
@@ -112,7 +114,7 @@
 <!-- Questo script va in fondo perchè ha bisogno dei dati caricati prima -->
 <script id='time_left' difference_seconds={{ time_diff_seconds }}>
     var time_left_span = document.getElementsByClassName('time_left_span');
-    time_left_span[0].innerHTML = 'ciao' ;
+    time_left_span[0].innerHTML = 'Time out' ;
     /* ps. notare che se l'utente cambia l'orologio del proprio pc, risulta
     solamente in una scorretta visualizzazione senza influenzare in nessuna
     maniera il browser */

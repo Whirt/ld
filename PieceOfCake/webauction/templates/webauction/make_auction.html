@@ -53,13 +53,22 @@
             {% csrf_token %}
             Title: {{ form.title }} <br><br>
             Duration DD/HH/MM :
-            <input type='numeric' name='days'
+            <input type='numeric' name='norm_days'
                 min=0 max=10 step=1 size=1 value=1 required>
-            <input type='numeric' name='hours'
+            <input type='numeric' name='norm_hours'
                 min=0 max=23 step=1 size=1 value=0 required>
-            <input type='numeric' name='minutes'
+            <input type='numeric' name='norm_minutes'
                 min=0 max=59 step=1 size=1 value=0 required>
             <br><br>
+            {% if userProfile.premium %}
+                Premium DD/HH/MM :
+                <input type='numeric' name='prem_days'
+                    min=0 max=10 step=1 size=1 value=1 required>
+                <input type='numeric' name='prem_hours'
+                    min=0 max=23 step=1 size=1 value=0 required>
+                <input type='numeric' name='prem_minutes'
+                    min=0 max=59 step=1 size=1 value=0 required>
+            {% endif %}
             Minimum price: {{ form.min_price }} <br><br>
             Minimum bid: {{ form.min_bid }} <br><br>
             Image: {{ form.image }} <br><br>

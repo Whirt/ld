@@ -5,6 +5,8 @@
 {% block scripts %}
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    {% load chartit %}
+    {{ charts|load_charts:"sold_chart, won_chart"}}
 {% endblock %}
 {% block style %}
     #profile {
@@ -225,11 +227,11 @@
             </li>
         {% endfor %}
         <h3> Sold auction history </h3>
-        {% if sold_auction_history %}
-            {% load chartit %}
-            <div id='expired_auction_chart'>
-                {{ sold_auction_history|load_charts:"expired_auction_chart" }}
-            </div>
+
+
+        {% load chartit %}
+        {% if sorted_sold_auction %}
+            <div id='sold_chart'></div>
         {% else %}
             No expired auctions.
         {% endif %}
@@ -242,12 +244,11 @@
                 </li>
             {% endfor %}
         </div>
+
         {% if request.user == userProfile.user %}
         <h3> Won auction history </h3>
-            {% if won_auction_history %}
-                <div id='won_auction_chart'>
-                    {{ won_auction_history|load_charts:"won_auction_chart" }}
-                </div>
+            {% if sorted_won_auction %}
+                <div id='won_chart'></div>
             {% else %}
                 Never won any auction.
             {% endif %}

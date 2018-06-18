@@ -115,7 +115,7 @@ def detail_auction(request, product_key):
         time_difference = elapsed.total_seconds()
         context['time_diff_seconds'] = time_difference
 
-    if request.method == 'POST':
+    if request.method == 'POST' and not auction.premium_active:
         new_bid = request.POST['bid_value']
         new_bid = new_bid.replace(',','.')
         new_bid = float(new_bid)
@@ -164,16 +164,11 @@ def success_created(request, product_key):
 @login_required
 def make_auction(request):
     context = {}
+    userProfile = UserProfile.objects.get(user=request.user)
+    context['userProfile'] = userProfile
     if request.method == 'POST':
         form = MakeAuctionForm(request.POST, request.FILES)
-        try:
-            user = User.objects.get(id=request.user.id)
-            userProfile = UserProfile.objects.get(user=user)
-        except User.DoesNotExist:
-            form = MakeAuctionForm()
-            context['form'] = form
-            context['error_message'] = 'System error: user not exists'
-            return render(request, 'webauction/make_auction.html', context)
+
         if not userProfile.premium and userProfile.auction_count == 0:
             form = MakeAuctionForm()
             context['form'] = form
@@ -182,24 +177,39 @@ def make_auction(request):
 
         error_message = ''
 
-        days = request.POST['days']
-        hours = request.POST['hours']
-        minutes = request.POST['minutes']
-        print(days + ' ' + hours + ' ' + minutes)
-        days = int(days)
-        hours = int(hours)
-        minutes = int(minutes)
-        now = timezone.localtime(timezone.now())
-        expire_date = now + timedelta(days=days, hours=hours, minutes=minutes)
-        if days == 0 and hours == 0 and minutes == 0:
+        norm_days = request.POST['norm_days']
+        norm_hours = request.POST['norm_hours']
+        norm_minutes = request.POST['norm_minutes']
+        prem_days = request.POST['prem_days']
+        prem_hours = request.POST['prem_hours']
+        prem_minutes = request.POST['prem_minutes']
+        print(norm_days + ' ' + norm_hours + ' ' + norm_minutes)
+        print(prem_days + ' ' + prem_hours + ' ' + prem_minutes)
+        norm_days = int(norm_days)
+        norm_hours = int(norm_hours)
+        norm_minutes = int(norm_minutes)
+        prem_days = int(prem_days)
+        prem_hours = int(prem_hours)
+        prem_minutes = int(prem_minutes)
+        if norm_days == 0 and norm_hours == 0 and norm_minutes == 0:
             error_message += ' Duration cannot be zero.'
         # controllo anche a lato server oltre che a livello di input form
-        elif days < 0 or hours < 0 or minutes < 0 or \
-             minutes >= 60 or hours >= 24 or days >= MAX_DURATION_DAY():
+        elif norm_days < 0 or norm_hours < 0 or norm_minutes < 0 or \
+             prem_days < 0 or prem_hours < 0 or prem_minutes < 0 or \
+             prem_minutes >= 60 or prem_hours >= 24 or prem_days >= MAX_DURATION_DAY() or \
+             norm_minutes >= 60 or norm_hours >= 24 or norm_days >= MAX_DURATION_DAY():
             error_message += ' Invalid duration value.'
 
+        now = timezone.localtime(timezone.now())
+        premium_date = now + timedelta(days=prem_days, hours=prem_hours, minutes=prem_minutes)
+        expire_date = now + timedelta(days=norm_days+prem_days,
+            hours=norm_hours+prem_hours, minutes=norm_minutes+prem_minutes)
+        premium_state = True
+        if not userProfile.premium or (prem_days == 0 and prem_hours == 0 and prem_minutes == 0):
+            premium_state = False
+
         if error_message == '' and form.is_valid():
-            seller = user
+            seller = request.user
             title = form.cleaned_data['title']
             image = form.cleaned_data['image']
             description = form.cleaned_data['description']
@@ -214,6 +224,7 @@ def make_auction(request):
             else:
                 auction = Auction(seller=seller, title=title, description=description,
                             image=image, expire_date=expire_date, min_price=min_price,
+                            premium_date = premium_date, premium_active = premium_state,
                             current_price = min_price, category=category, min_bid=min_bid)
                 auction.save()
                 if not userProfile.premium:
@@ -302,14 +313,14 @@ def profile(request, searched_username):
         voteAlreadyExists = True
 
     # Calcolo i grafici
-    sold_auction = Auction.objects.filter(Q(seller__exact=userProfile.user), Q(active__exact=False),
+    sold_auction = Auction.objects.filter(Q(seller__exact=userProfile.user, active__exact=False),
         ~Q(last_bid_user__exact=None))
     now = timezone.localtime(timezone.now())
     sorted_sold_auction = sorted(sold_auction, \
         key=lambda x: (now-x.pub_date).total_seconds() , reverse=False)
     chart_expired = get_pool(sold_auction)
     chart_won = []
-    
+
     sorted_won_auction = []
     if userProfile.user == request.user:
         won_auction = Auction.objects.filter(last_bid_user__exact=request.user, active__exact=False)
@@ -325,9 +336,8 @@ def profile(request, searched_username):
     context['alreadySentBack'] = requestIsSentBack
     context['activeAuctions'] = active_auction_list
     context['sorted_sold_auction'] = sorted_sold_auction
-    context['sold_auction_history'] = chart_expired
     context['sorted_won_auction'] = sorted_won_auction
-    context['won_auction_history'] = chart_won
+    context['charts'] = [chart_expired, chart_won]
 
     all_votes = Vote.objects.filter(receiver__exact=userProfile.user)
     # L'ordinamento avviene tramite la data, si ottiene la data,

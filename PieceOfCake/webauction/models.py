@@ -29,6 +29,7 @@ class UserProfile(models.Model):
     # Per il sistema di feedback si ha sia il numero di sold_auction
     # che il numero di voti
     votes = models.IntegerField(default=0)
+    # Conteggio di token per effettuare aste
     auction_count = models.SmallIntegerField(default=3)
     premium = models.BooleanField(default=False)
     description = models.CharField(max_length=1000, default='')
@@ -58,6 +59,11 @@ class Auction(models.Model):
     # Il valore di default è il giorno stesso della pubbicazione
     # e svolge la funzione da segnalatore di errore
     expire_date = models.DateTimeField(default=datetime.datetime.now)
+    # Nel caso del premium, se il valore è uguale al default significa che
+    # non si è utenti premium e quindi non ha valore tale campo
+    premium_date = models.DateTimeField(default=datetime.datetime.now)
+    premium_active = models.BooleanField(default=False)
+    
     min_price = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     # quantita' minima di offerta rispetto quello attuale
     min_bid = models.DecimalField(max_digits=10, default=MIN_BID(), decimal_places=2)
