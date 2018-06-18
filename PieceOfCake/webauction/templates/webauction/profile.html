@@ -242,8 +242,8 @@
                 </li>
             {% endfor %}
         </div>
-        <h3> Won auction history </h3>
         {% if request.user == userProfile.user %}
+        <h3> Won auction history </h3>
             {% if won_auction_history %}
                 <div id='won_auction_chart'>
                     {{ won_auction_history|load_charts:"won_auction_chart" }}
@@ -251,7 +251,6 @@
             {% else %}
                 Never won any auction.
             {% endif %}
-        {% endif %}
         <div class="history">
             {% for auction in sorted_won_auction %}
             <li>
@@ -261,6 +260,7 @@
             </li>
             {% endfor %}
         </div>
+        {% endif %}
 </div>
 </div>
 {% endblock %}

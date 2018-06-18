@@ -28,12 +28,23 @@ def messenger(request):
             friendRequest.accepted = True
             friendRequest.save()
             left_notification += 'Friend accepted'
-        if 'chat' in request.POST:
+        elif 'chat' in request.POST:
             # Qui ordino secondo la data
             #sorted_messages = sorted(all_messages, key=lambda x: x.datetime)
             user_chat_with = User.objects.get(username=request.POST['user_chat'])
             chat_selected = True
-        if 'new_message' in request.POST:
+        elif 'delete_friend' in request.POST:
+            print('Im here')
+            user_break_with = User.objects.get(username=request.POST['user_chat'])
+            friendRequest= FriendRequest.objects.filter(
+                    Q(friend_of__exact=request.user,friend__exact=user_break_with)
+                   |Q(friend_of__exact=user_break_with,friend__exact=request.user))
+            # Siccome non si tengono dati in memoria a riguardo
+            # in questo caso è lecito cancellarlo direttamente dal database
+            # in quanto si perdono informazioni
+            friendRequest.delete()
+
+        elif 'new_message' in request.POST:
             chat_selected = True
             messageToBeSent = request.POST['messageToBeSent']
             username_chat_with = request.POST['username_chat_with']

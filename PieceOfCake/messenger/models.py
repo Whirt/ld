@@ -20,9 +20,6 @@ class Message(models.Model):
 2. Serve per capire anche la direzionalità della richiesta,
 in friend_of ci sarà sempre colui che ha inviato la richiesta e in friend
 colui che può accettarla
-
-Per vedere tutti gli amici di un utente dovrà controllare quindi di esser
-presente o in friend_of o in friend (possibile costo O(n)).
 """
 class FriendRequest(models.Model):
     def __str__(self):

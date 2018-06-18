@@ -309,6 +309,8 @@ def profile(request, searched_username):
         key=lambda x: (now-x.pub_date).total_seconds() , reverse=False)
     chart_expired = get_pool(sold_auction)
     chart_won = []
+    
+    sorted_won_auction = []
     if userProfile.user == request.user:
         won_auction = Auction.objects.filter(last_bid_user__exact=request.user, active__exact=False)
         now = timezone.localtime(timezone.now())
