@@ -121,8 +121,8 @@
     <div id=profile_data>
         Username: {{ userProfile.user.username }} <br>
         Email: {{ userProfile.user.email }} <br>
-        Sold number: {{ userProfile.sold_auction }}
-        Feedback: {{ userProfile.feedback }} % <br>
+        Sold number: {{ userProfile.sold_auction }} <br>
+        Feedback: {{ percentage_feedback }} % Votes: {{ userProfile.votes }}<br>
 
         {% if request.user == userProfile.user %}
             Premium:

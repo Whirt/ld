@@ -366,6 +366,12 @@ def profile(request, searched_username):
         Q(follower__exact=request.user), Q(isActive__exact=True))
     context['followedAuctions'] = followedAuctions
 
+    if userProfile.votes != 0:
+        context['percentage_feedback'] = \
+            userProfile.feedback*100/(MAX_VOTE_NUM()*userProfile.votes)
+    else:
+        context['percentage_feedback'] = 0.0
+
     if request.method == 'GET':
         return render(request, 'webauction/profile.html', context)
 
@@ -428,6 +434,16 @@ def profile(request, searched_username):
             success_message = 'Rated successfully'
             # lo aggiungo ai voti così si vede direttamente
             all_votes_sorted.append(new_vote)
+            userProfile.feedback = userProfile.feedback + vote
+            userProfile.votes = userProfile.votes + 1
+            userProfile.save()
+
+        # Ricalcolo la % del feedback
+        if userProfile.votes != 0:
+            context['percentage_feedback'] = \
+                userProfile.feedback*100/(MAX_VOTE_NUM()*userProfile.votes)
+        else:
+            context['percentage_feedback'] = 0.0
 
         context['voteExists'] = voteAlreadyExists
 

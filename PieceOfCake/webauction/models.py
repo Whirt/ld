@@ -25,7 +25,8 @@ class UserProfile(models.Model):
     post_save.connect(create_user_profile, sender=User)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    feedback = models.FloatField(default=0)
+    # Il feedback è un integer, nella visualizzazione si calcolerà poi la percentuale
+    feedback = models.IntegerField(default=0)
     # Per il sistema di feedback si ha sia il numero di sold_auction
     # che il numero di voti
     votes = models.IntegerField(default=0)
@@ -63,7 +64,7 @@ class Auction(models.Model):
     # non si è utenti premium e quindi non ha valore tale campo
     premium_date = models.DateTimeField(default=datetime.datetime.now)
     premium_active = models.BooleanField(default=False)
-    
+
     min_price = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     # quantita' minima di offerta rispetto quello attuale
     min_bid = models.DecimalField(max_digits=10, default=MIN_BID(), decimal_places=2)
@@ -79,7 +80,9 @@ class Auction(models.Model):
                                 choices=CATEGORY_CHOICES)
 
 def MAX_VOTE_LENGTH():
-    return 1000;
+    return 1000
+def MAX_VOTE_NUM():
+    return 5
 class Vote(models.Model):
     def __str__(self):
         return self.message + ' from ' + sender.username + ' to ' + receiver.username
